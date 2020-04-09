@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">TakeNote</string>
+    <string name="title1">Title</string>
+    <string name="content">Content</string>
+    <string name="add">ADD</string>
+    <string name="view" />
+    <string name="view_note">View note</string>
+    <string name="note1">Note</string>
+    <string name="title2">Title</string>
+    <string name="note2">Note</string>
+    <string name="title3">Title</string>
+    <string name="your_note">YOUR NOTE</string>
+    <string name="todo">TODO</string>
+</resources>
