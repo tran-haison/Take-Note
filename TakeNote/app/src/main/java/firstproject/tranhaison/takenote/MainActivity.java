@@ -7,6 +7,10 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
 
+/**
+ * MainActivity is the Home Page of this app
+ * You can choose to add a new note or view all the notes
+ */
 public class MainActivity extends AppCompatActivity {
 
     ImageButton imageButtonAdd, imageButtonView;
@@ -23,6 +27,9 @@ public class MainActivity extends AppCompatActivity {
         clickView();
     }
 
+    /**
+     * Click the Add button to add a new note
+     */
     public void clickAdd () {
         imageButtonAdd.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -34,6 +41,9 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Click the View button to view all the notes
+     */
     public void clickView () {
         imageButtonView.setOnClickListener(new View.OnClickListener() {
             @Override

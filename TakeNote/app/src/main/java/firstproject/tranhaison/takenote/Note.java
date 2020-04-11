@@ -2,6 +2,12 @@ package firstproject.tranhaison.takenote;
 
 import java.io.Serializable;
 
+/**
+ * This class Note is used to store the information about a note:
+ * 1. ID of the note
+ * 2. Title of the note
+ * 3. Note
+ */
 public class Note implements Serializable {
     private long id;
     private String title;

@@ -15,10 +15,12 @@ import androidx.appcompat.app.AlertDialog;
 
 import java.util.List;
 
-// Create an adapter to display the Note in ListView
+/**
+ * NoteAdapter is used to connect between an ArrayList (which keeps all the notes)
+ * and ListView to display notes
+ */
 public class NoteAdapter extends BaseAdapter {
 
-    // 4 attributes of the Adapter
     private Context context;
     private int layout;
     private List<Note> noteList;
@@ -31,29 +33,57 @@ public class NoteAdapter extends BaseAdapter {
         this.noteList = noteList;
     }
 
+    /**
+     * Count the number of notes in list
+     * @return
+     */
     @Override
     public int getCount() {
         noteList = db.fetchAllNotes();
         return noteList.size();
     }
 
+    /**
+     * Get one specific note from list
+     * @param position
+     * @return
+     */
     @Override
     public Object getItem(int position) {
         noteList = db.fetchAllNotes();
         return noteList.get(position);
     }
 
+    /**
+     * Get the ID of one specific note from the list
+     * @param position
+     * @return
+     */
     @Override
     public long getItemId(int position) {
         noteList = db.fetchAllNotes();
         return noteList.get(position).getId();
     }
 
+    /**
+     * Keep the Views
+     */
     private class ViewHolder {
         TextView textViewTitle, textViewNote;
         ImageView imageViewDelete;
     }
 
+    /**
+     * Set layout for convertView, setTag and pass ViewHolder as argument
+     * mapping Views in layout to Views in ViewHolder if not exists
+     * otherwise getTag for ViewHolder
+     * setText for Title and Note
+     * delete a note when clicking the image "garbage"
+     * @param position
+     * @param convertView
+     * @param parent
+     * @return
+     */
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
         ViewHolder viewHolder;
@@ -93,12 +123,17 @@ public class NoteAdapter extends BaseAdapter {
         return convertView;
     }
 
+    /**
+     * Display a dialog to ask user to delete a note or not
+     * Click "OK" to delete the note
+     * Click "Cancel" to cancel
+     * @param position
+     */
     private void deleteDialog(final long position) {
         final AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
         alertDialog.setTitle("NOTE DELETE");
         alertDialog.setMessage("Do you want to delete this note?");
 
-        // Click "yes" to delete the note in ListView
         alertDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -109,7 +144,6 @@ public class NoteAdapter extends BaseAdapter {
             }
         });
 
-        // Do nothing
         alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
