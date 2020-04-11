@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, AddNoteActivity.class);
                 startActivity(intent);
+                overridePendingTransition(R.anim.anim_enter_from_right, R.anim.anim_exit_to_left);
             }
         });
     }
@@ -39,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, ViewNoteActivity.class);
                 startActivity(intent);
+                overridePendingTransition(R.anim.anim_enter_from_right, R.anim.anim_exit_to_left);
             }
         });
     }

@@ -1,15 +1,17 @@
 package firstproject.tranhaison.takenote;
 
 import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
+import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.BaseAdapter;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AlertDialog;
 
 import java.util.List;
 
@@ -49,7 +51,7 @@ public class NoteAdapter extends BaseAdapter {
 
     private class ViewHolder {
         TextView textViewTitle, textViewNote;
-        ImageButton imageButtonEdit;
+        ImageView imageViewDelete;
     }
 
     @Override
@@ -67,7 +69,7 @@ public class NoteAdapter extends BaseAdapter {
             viewHolder = new ViewHolder();
             viewHolder.textViewTitle = (TextView) convertView.findViewById(R.id.textViewTitle);
             viewHolder.textViewNote = (TextView) convertView.findViewById(R.id.textViewNote);
-            viewHolder.imageButtonEdit = (ImageButton) convertView.findViewById(R.id.imageButtonEdit);
+            viewHolder.imageViewDelete = (ImageView) convertView.findViewById(R.id.imageViewDelete);
 
             convertView.setTag(viewHolder);
         } else {
@@ -78,21 +80,44 @@ public class NoteAdapter extends BaseAdapter {
         viewHolder.textViewTitle.setText(note.getTitle());
         viewHolder.textViewNote.setText(note.getNote());
 
-        viewHolder.imageButtonEdit.setOnClickListener(new View.OnClickListener() {
+        viewHolder.imageViewDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, AddNoteActivity.class);
-
-                Note editedNote = db.fetchNote(noteList.get(position).getId());
-
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("editedNote", editedNote);
-                intent.putExtra("data", bundle);
-
-                context.startActivity(intent);
+                deleteDialog(position);
             }
         });
 
+        Animation animation = AnimationUtils.loadAnimation(context, R.anim.anim_listview);
+        convertView.startAnimation(animation);
+
         return convertView;
     }
+
+    private void deleteDialog(final long position) {
+        final AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
+        alertDialog.setTitle("NOTE DELETE");
+        alertDialog.setMessage("Do you want to delete this note?");
+
+        // Click "yes" to delete the note in ListView
+        alertDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                db.deleteNote(noteList.get((int) position).getId());
+                noteList.clear();
+                noteList = db.fetchAllNotes();
+                notifyDataSetChanged();
+            }
+        });
+
+        // Do nothing
+        alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+
+        alertDialog.show();
+    }
+
 }

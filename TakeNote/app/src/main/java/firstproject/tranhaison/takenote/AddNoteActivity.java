@@ -54,6 +54,8 @@ public class AddNoteActivity extends AppCompatActivity {
 
                     Intent intent = new Intent(AddNoteActivity.this, ViewNoteActivity.class);
                     startActivity(intent);
+
+                    overridePendingTransition(R.anim.anim_enter_from_right, R.anim.anim_exit_to_left);
                 }
             }
         });
@@ -94,6 +96,7 @@ public class AddNoteActivity extends AppCompatActivity {
                     boolean isEdited = myDB.updateNote(editedNote.getId(), title, note);
                     if (isEdited) {
                         startActivity(intent);
+                        overridePendingTransition(R.anim.anim_enter_from_right, R.anim.anim_exit_to_left);
                     } else {
                         Toast.makeText(AddNoteActivity.this, "Nothing is chosen to be edited!", Toast.LENGTH_SHORT).show();
                         Toast.makeText(AddNoteActivity.this, "You should add a new note", Toast.LENGTH_SHORT).show();

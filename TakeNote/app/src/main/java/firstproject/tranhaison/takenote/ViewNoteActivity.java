@@ -22,7 +22,6 @@ public class ViewNoteActivity extends AppCompatActivity {
     ImageButton imageButtonAdd2;
     NoteAdapter noteAdapter;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,8 +38,7 @@ public class ViewNoteActivity extends AppCompatActivity {
         listViewNote.setAdapter(noteAdapter);
 
         addNewNote();
-        //editNote();
-        confirmDelete();
+        editNote();
         getNotes();
     }
 
@@ -57,10 +55,11 @@ public class ViewNoteActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(ViewNoteActivity.this, AddNoteActivity.class);
                 startActivity(intent);
+                overridePendingTransition(R.anim.anim_enter_from_left, R.anim.anim_exit_to_right);
             }
         });
     }
-/*
+
     private void editNote() {
         listViewNote.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -77,42 +76,4 @@ public class ViewNoteActivity extends AppCompatActivity {
             }
         });
     }
-*/
-    public void confirmDelete() {
-        listViewNote.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                deleteDialog(position);
-                return false;
-            }
-        });
-    }
-
-    private void deleteDialog(final long position) {
-        final AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-        alertDialog.setTitle("NOTE DELETE");
-        alertDialog.setMessage("Do you want to delete this note?");
-
-        // Click "yes" to delete the note in ListView
-        alertDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                myDB.deleteNote(noteArrayList.get((int) position).getId());
-                noteArrayList.clear();
-                noteArrayList = myDB.fetchAllNotes();
-                noteAdapter.notifyDataSetChanged();
-            }
-        });
-
-        // Do nothing
-        alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-            }
-        });
-
-        alertDialog.show();
-    }
-
 }
