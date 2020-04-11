@@ -9,6 +9,9 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+/**
+ * AddNoteActivity is used to add a new note or edit/view a note
+ */
 public class AddNoteActivity extends AppCompatActivity {
 
     NotesDbAdapter myDB;
@@ -35,6 +38,10 @@ public class AddNoteActivity extends AppCompatActivity {
         updateNote(editedNote);
     }
 
+    /**
+     * Add a new note to database after filling in both Title and Note
+     * if at least 1 field was missed, user has to fill it
+     */
     private void addNewNote() {
         imageButtonAddMain.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,14 +68,20 @@ public class AddNoteActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Get a note that user want to edit or view from ViewNoteActivity
+     * @return
+     */
     private Note getEditedNote() {
         Intent getIntent = getIntent();
-
         Bundle bundle = getIntent.getBundleExtra("data");
+
         Note editedNote = new Note();
+
         if (bundle != null) {
             editedNote = (Note) bundle.getSerializable("editedNote");
         }
+
         if (editedNote != null) {
             editTextTitle.setText(editedNote.getTitle());
             editTextNote.setText(editedNote.getNote());
@@ -77,6 +90,12 @@ public class AddNoteActivity extends AppCompatActivity {
         return editedNote;
     }
 
+    /**
+     * Update an old note to a new note
+     * if there is no note that has been chosen, user cannot update it
+     * in this case, user must add a new one
+     * @param editedNote
+     */
     public void updateNote(final Note editedNote) {
         imageButtonCheck.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,7 +117,6 @@ public class AddNoteActivity extends AppCompatActivity {
                         startActivity(intent);
                         overridePendingTransition(R.anim.anim_enter_from_right, R.anim.anim_exit_to_left);
                     } else {
-                        Toast.makeText(AddNoteActivity.this, "Nothing is chosen to be edited!", Toast.LENGTH_SHORT).show();
                         Toast.makeText(AddNoteActivity.this, "You should add a new note", Toast.LENGTH_SHORT).show();
                     }
                 }
