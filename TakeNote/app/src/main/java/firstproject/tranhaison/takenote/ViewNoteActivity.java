@@ -1,5 +1,6 @@
 package firstproject.tranhaison.takenote;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -8,6 +9,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -26,6 +28,8 @@ public class ViewNoteActivity extends AppCompatActivity {
     ArrayList<Note> noteArrayList;
     ImageButton imageButtonAdd2;
     NoteAdapter noteAdapter;
+
+    final int REQUEST_CODE_EDIT = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,8 +104,24 @@ public class ViewNoteActivity extends AppCompatActivity {
                 bundle.putSerializable("editedNote", editedNote);
                 intent.putExtra("data", bundle);
 
-                startActivity(intent);
+                startActivityForResult(intent, REQUEST_CODE_EDIT);
+                overridePendingTransition(R.anim.anim_enter_from_left, R.anim.anim_exit_to_right);
             }
         });
+    }
+
+    /**
+     * Check to see if the note has been updated or not
+     * if "yes" -> Toast on screen
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == REQUEST_CODE_EDIT && resultCode == RESULT_OK && data != null) {
+            Toast.makeText(this, "Note updated", Toast.LENGTH_SHORT).show();
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }
