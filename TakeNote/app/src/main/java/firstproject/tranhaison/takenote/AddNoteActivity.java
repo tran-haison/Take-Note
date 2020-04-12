@@ -100,7 +100,7 @@ public class AddNoteActivity extends AppCompatActivity {
         imageButtonCheck.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(AddNoteActivity.this, ViewNoteActivity.class);
+                Intent intent = new Intent();
 
                 String title = editTextTitle.getText().toString();
                 String note = editTextNote.getText().toString();
@@ -114,7 +114,10 @@ public class AddNoteActivity extends AppCompatActivity {
                 else {
                     boolean isEdited = myDB.updateNote(editedNote.getId(), title, note);
                     if (isEdited) {
-                        startActivity(intent);
+                        intent.putExtra("isEdited", RESULT_OK);
+                        setResult(RESULT_OK, intent);
+                        finish();
+
                         overridePendingTransition(R.anim.anim_enter_from_right, R.anim.anim_exit_to_left);
                     } else {
                         Toast.makeText(AddNoteActivity.this, "You should add a new note", Toast.LENGTH_SHORT).show();
