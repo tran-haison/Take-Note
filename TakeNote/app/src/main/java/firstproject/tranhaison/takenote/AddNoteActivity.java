@@ -60,6 +60,7 @@ public class AddNoteActivity extends AppCompatActivity {
                     long id = myDB.createNote(title, note_text);
 
                     Intent intent = new Intent(AddNoteActivity.this, ViewNoteActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
 
                     overridePendingTransition(R.anim.anim_enter_from_right, R.anim.anim_exit_to_left);
