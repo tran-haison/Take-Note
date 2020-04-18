@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/menu_view_note_search"
+        android:icon="@drawable/round_search_black_48dp"
+        android:title="Search"
+        android:orderInCategory="100"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/menu_view_note_photo"
+        android:icon="@drawable/round_photo_black_48dp"
+        android:title="Photo"
+        android:orderInCategory="100"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/menu_view_note_delete"
+        android:icon="@drawable/round_delete_black_48dp"
+        android:title="Delete"
+        android:orderInCategory="100"
+        app:showAsAction="ifRoom" />
+
+</menu>

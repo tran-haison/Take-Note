@@ -1,13 +1,22 @@
-package firstproject.tranhaison.takenote;
+package firstproject.tranhaison.takenote.model;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.Toast;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import firstproject.tranhaison.takenote.Note;
+import firstproject.tranhaison.takenote.NotesDbAdapter;
+import firstproject.tranhaison.takenote.R;
 
 /**
  * AddNoteActivity is used to add a new note or edit/view a note
@@ -15,9 +24,9 @@ import android.widget.Toast;
 public class AddNoteActivity extends AppCompatActivity {
 
     NotesDbAdapter myDB;
-
     EditText editTextTitle, editTextNote;
-    ImageButton imageButtonCheck, imageButtonAddMain;
+    Toolbar toolbarAddNote;
+    FloatingActionButton floatingActionButtonAdd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,13 +38,34 @@ public class AddNoteActivity extends AppCompatActivity {
 
         editTextTitle = (EditText) findViewById(R.id.editTextTitle);
         editTextNote = (EditText) findViewById(R.id.editTextNote);
-        imageButtonCheck = (ImageButton) findViewById(R.id.imageButtonCheck);
-        imageButtonAddMain = (ImageButton) findViewById(R.id.imageButtonAddMain);
+        floatingActionButtonAdd = (FloatingActionButton) findViewById(R.id.floatingActionButtonAdd);
+        toolbarAddNote = (Toolbar) findViewById(R.id.toolBarAddNote);
+        setSupportActionBar(toolbarAddNote);
 
         addNewNote();
-
         Note editedNote = getEditedNote();
         updateNote(editedNote);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_add_note_activity, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_add_note_photo:
+                // TODO
+                Toast.makeText(this, "photo", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.menu_add_note_delete:
+                // TODO
+                Toast.makeText(this, "delete", Toast.LENGTH_SHORT).show();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     /**
@@ -43,26 +73,23 @@ public class AddNoteActivity extends AppCompatActivity {
      * if at least 1 field was missed, user has to fill it
      */
     private void addNewNote() {
-        imageButtonAddMain.setOnClickListener(new View.OnClickListener() {
+        floatingActionButtonAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 String title = editTextTitle.getText().toString();
                 String note_text = editTextNote.getText().toString();
 
-                if (title.isEmpty() && note_text.isEmpty())
-                    Toast.makeText(AddNoteActivity.this, "Please fill in both title and note", Toast.LENGTH_SHORT).show();
-                else if (title.isEmpty())
-                    Toast.makeText(AddNoteActivity.this, "Please fill in the title", Toast.LENGTH_SHORT).show();
-                else if (note_text.isEmpty())
-                    Toast.makeText(AddNoteActivity.this, "Please fill in the note", Toast.LENGTH_SHORT).show();
+                if (title.isEmpty() && note_text.isEmpty()) {
+                    Toast.makeText(AddNoteActivity.this, "Empty note discarded", Toast.LENGTH_SHORT).show();
+                    finish();
+                    overridePendingTransition(R.anim.anim_enter_from_right, R.anim.anim_exit_to_left);
+                }
                 else {
-                    long id = myDB.createNote(title, note_text);
-
+                    myDB.createNote(title, note_text);
                     Intent intent = new Intent(AddNoteActivity.this, ViewNoteActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
-
                     overridePendingTransition(R.anim.anim_enter_from_right, R.anim.anim_exit_to_left);
                 }
             }
@@ -98,7 +125,7 @@ public class AddNoteActivity extends AppCompatActivity {
      * @param editedNote
      */
     public void updateNote(final Note editedNote) {
-        imageButtonCheck.setOnClickListener(new View.OnClickListener() {
+        toolbarAddNote.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent();
@@ -106,26 +133,28 @@ public class AddNoteActivity extends AppCompatActivity {
                 String title = editTextTitle.getText().toString();
                 String note = editTextNote.getText().toString();
 
-                if (title.equals("") && note.equals(""))
-                    Toast.makeText(AddNoteActivity.this, "Please fill in both title and note", Toast.LENGTH_SHORT).show();
-                else if (title.equals(""))
-                    Toast.makeText(AddNoteActivity.this, "Please fill in the title", Toast.LENGTH_SHORT).show();
-                else if (note.equals(""))
-                    Toast.makeText(AddNoteActivity.this, "Please fill in the note", Toast.LENGTH_SHORT).show();
+                if (title.equals("") && note.equals("")) {
+                    Toast.makeText(AddNoteActivity.this, "Empty note discarded", Toast.LENGTH_SHORT).show();
+                    finish();
+                    overridePendingTransition(R.anim.anim_enter_from_right, R.anim.anim_exit_to_left);
+                }
                 else {
                     boolean isEdited = myDB.updateNote(editedNote.getId(), title, note);
                     if (isEdited) {
                         intent.putExtra("isEdited", RESULT_OK);
                         setResult(RESULT_OK, intent);
                         finish();
-
                         overridePendingTransition(R.anim.anim_enter_from_right, R.anim.anim_exit_to_left);
                     } else {
-                        Toast.makeText(AddNoteActivity.this, "You should add a new note", Toast.LENGTH_SHORT).show();
+                        myDB.createNote(title, note);
+                        intent = new Intent(AddNoteActivity.this, ViewNoteActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                        overridePendingTransition(R.anim.anim_enter_from_right, R.anim.anim_exit_to_left);
                     }
                 }
-
             }
         });
+
     }
 }

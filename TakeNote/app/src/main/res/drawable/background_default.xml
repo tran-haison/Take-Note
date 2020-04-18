@@ -3,10 +3,10 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <padding
-        android:top="10dp"
-        android:bottom="10dp"
-        android:left="15dp"
-        android:right="15dp" />
+        android:top="5dp"
+        android:bottom="5dp"
+        android:left="10dp"
+        android:right="10dp" />
 
     <solid
         android:color="@null" />
@@ -16,6 +16,6 @@
 
     <stroke
         android:color="#000000"
-        android:width="3dp" />
+        android:width="1dp" />
 
 </shape>

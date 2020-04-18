@@ -1,17 +1,27 @@
-package firstproject.tranhaison.takenote;
+package firstproject.tranhaison.takenote.model;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.util.ArrayList;
+
+import firstproject.tranhaison.takenote.Note;
+import firstproject.tranhaison.takenote.NoteAdapter;
+import firstproject.tranhaison.takenote.NotesDbAdapter;
+import firstproject.tranhaison.takenote.R;
 
 /**
  * ViewNoteActivity displays all the Notes from database in a ListView
@@ -26,7 +36,8 @@ public class ViewNoteActivity extends AppCompatActivity {
     NotesDbAdapter myDB;
     ListView listViewNote;
     ArrayList<Note> noteArrayList;
-    ImageButton imageButtonAdd2;
+    Toolbar toolbar;
+    FloatingActionButton floatingActionButtonAdd;
     NoteAdapter noteAdapter;
 
     final int REQUEST_CODE_EDIT = 1;
@@ -46,8 +57,9 @@ public class ViewNoteActivity extends AppCompatActivity {
          * Mapping Views
          */
         listViewNote = (ListView) findViewById(R.id.listViewNote);
-        imageButtonAdd2 = (ImageButton) findViewById(R.id.imageButtonAdd2);
-
+        floatingActionButtonAdd = (FloatingActionButton) findViewById(R.id.floatingActionButtonAdd);
+        toolbar = (Toolbar) findViewById(R.id.toolBar);
+        setSupportActionBar(toolbar);
         noteArrayList = new ArrayList<>();
 
         /**
@@ -56,9 +68,34 @@ public class ViewNoteActivity extends AppCompatActivity {
         noteAdapter = new NoteAdapter(myDB,ViewNoteActivity.this, R.layout.note_layout, noteArrayList);
         listViewNote.setAdapter(noteAdapter);
 
+        getNotes();
         addNewNote();
         editNote();
-        getNotes();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_view_note_activity, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_view_note_search:
+                // TODO
+                Toast.makeText(this, "search", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.menu_view_note_photo:
+                // TODO
+                Toast.makeText(this, "photo", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.menu_view_note_delete:
+                // TODO
+                Toast.makeText(this, "delete", Toast.LENGTH_SHORT).show();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     /**
@@ -76,13 +113,11 @@ public class ViewNoteActivity extends AppCompatActivity {
      * Move from ViewNoteActivity to another Activity called AddNoteActivity
      */
     private void addNewNote () {
-        imageButtonAdd2.setOnClickListener(new View.OnClickListener() {
+        floatingActionButtonAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 Intent intent = new Intent(ViewNoteActivity.this, AddNoteActivity.class);
                 startActivity(intent);
-
                 overridePendingTransition(R.anim.anim_enter_from_left, R.anim.anim_exit_to_right); // Add transition for both Activities
             }
         });

@@ -9,9 +9,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        <activity android:name=".ViewNoteActivity"></activity>
-        <activity android:name=".AddNoteActivity" />
-        <activity android:name=".MainActivity"
+        <activity android:name=".model.DemoActivity"></activity>
+        <activity android:name=".model.ViewNoteActivity" />
+        <activity android:name=".model.AddNoteActivity" />
+        <activity
+            android:name=".model.MainActivity"
             android:launchMode="singleInstance">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
