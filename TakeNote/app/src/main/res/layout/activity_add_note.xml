@@ -10,13 +10,13 @@
         android:id="@+id/toolBarAddNote"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/background_default_black"
+        android:background="#49342E"
         android:minHeight="?attr/actionBarSize"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:navigationIcon="@drawable/round_arrow_back_ios_white_48dp"
-        app:title="NOTE" />
+        app:navigationIcon="@drawable/round_arrow_back_white_48dp"
+        app:title="@string/empty"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/floatingActionButtonAdd"
@@ -25,10 +25,12 @@
         android:layout_marginEnd="32dp"
         android:layout_marginBottom="32dp"
         android:src="@drawable/round_add_white_48dp"
-        app:backgroundTint="#000000"
+        app:backgroundTint="#49342E"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:fabSize="normal" />
+        app:fabSize="normal"
+        app:elevation="6dp"
+        app:borderWidth="0dp"/>
 
     <EditText
         android:id="@+id/editTextTitle"
@@ -43,7 +45,7 @@
         android:inputType="textPersonName"
         android:padding="7dp"
         android:textColor="#000000"
-        android:textColorHint="#000000"
+        android:textColorHint="#D7453A2E"
         android:textSize="25sp"
         android:textStyle="bold"
         android:background="@null"
@@ -58,7 +60,7 @@
         android:layout_marginStart="4dp"
         android:layout_marginTop="4dp"
         android:layout_marginEnd="4dp"
-        android:layout_marginBottom="4dp"
+        android:background="@null"
         android:ems="10"
         android:gravity="start|top"
         android:hint="@string/note"
@@ -66,13 +68,29 @@
         android:inputType="textMultiLine"
         android:padding="10dp"
         android:textColor="#000000"
-        android:textColorHint="#000000"
+        android:textColorHint="#D7453A2E"
         android:textSize="20sp"
-        android:background="@null"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/textViewDate"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editTextTitle" />
+
+    <TextView
+        android:id="@+id/textViewDate"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginBottom="4dp"
+        android:text=""
+        android:textColor="#5E5C5A"
+        android:textSize="18sp"
+        android:textStyle="italic"
+        android:paddingStart="7dp"
+        android:paddingEnd="7dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

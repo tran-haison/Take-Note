@@ -118,7 +118,7 @@ public class ViewNoteActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(ViewNoteActivity.this, AddNoteActivity.class);
                 startActivity(intent);
-                overridePendingTransition(R.anim.anim_enter_from_left, R.anim.anim_exit_to_right); // Add transition for both Activities
+                overridePendingTransition(R.anim.anim_enter_from_left, R.anim.anim_exit_to_right);
             }
         });
     }

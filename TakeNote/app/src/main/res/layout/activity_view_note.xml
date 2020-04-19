@@ -17,8 +17,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:navigationIcon="@drawable/round_menu_black_48dp"
-        app:title="NOTE" />
+        app:navigationIcon="@drawable/ic_menu_48dp"
+        app:title="@string/empty" />
 
     <ListView
         android:id="@+id/listViewNote"
@@ -42,9 +42,11 @@
         android:layout_marginEnd="32dp"
         android:layout_marginBottom="32dp"
         android:src="@drawable/round_add_white_48dp"
-        app:backgroundTint="#000000"
+        app:backgroundTint="#49342E"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:fabSize="normal" />
+        app:fabSize="normal"
+        app:elevation="6dp"
+        app:borderWidth="0dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

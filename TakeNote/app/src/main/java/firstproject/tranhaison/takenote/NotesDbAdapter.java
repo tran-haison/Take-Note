@@ -18,9 +18,10 @@ import java.util.ArrayList;
  */
 public class NotesDbAdapter {
 
+    public static final String KEY_ROWID = "_id";
     public static final String KEY_TITLE = "title";
     public static final String KEY_BODY = "body";
-    public static final String KEY_ROWID = "_id";
+    public static final String KEY_DATE = "date";
 
     private static final String TAG = "NotesDbAdapter";
     private DatabaseHelper mDbHelper;
@@ -31,7 +32,7 @@ public class NotesDbAdapter {
      */
     private static final String DATABASE_CREATE =
             "create table notes (_id integer primary key autoincrement, "
-                    + "title text not null, body text not null);";
+                    + "title text not null, body text not null, date text not null);";
 
     private static final String DATABASE_NAME = "data";
     private static final String DATABASE_TABLE = "notes";
@@ -91,19 +92,20 @@ public class NotesDbAdapter {
      *
      * @param title the title of the note
      * @param body the body of the note
+     * @param date the date of the note
      * @return rowId or -1 if failed
      */
-    public long createNote(String title, String body) {
+    public long createNote(String title, String body, String date) {
         ContentValues initialValues = new ContentValues();
         initialValues.put(KEY_TITLE, title);
         initialValues.put(KEY_BODY, body);
+        initialValues.put(KEY_DATE, date);
 
         return mDb.insert(DATABASE_TABLE, null, initialValues);
     }
 
     /**
      * Delete the note with the given rowId
-     *
      * @param rowId id of note to delete
      * @return true if deleted, false otherwise
      */
@@ -113,14 +115,13 @@ public class NotesDbAdapter {
     }
 
     /**
-     * Return a Cursor over the list of all notes in the database
-     *
-     * @return Cursor over all notes
+     * Return an ArrayList which contain all the notes of the database
+     * @return ArrayList of all notes
      */
     public ArrayList<Note> fetchAllNotes() {
 
         Cursor cursor = mDb.query(DATABASE_TABLE, new String[] {KEY_ROWID, KEY_TITLE,
-                KEY_BODY}, null, null, null, null, null);
+                KEY_BODY, KEY_DATE}, null, null, null, null, null);
 
         ArrayList<Note> noteArrayList = new ArrayList<>();
 
@@ -130,6 +131,7 @@ public class NotesDbAdapter {
                 note.setId(Long.parseLong(cursor.getString(0)));
                 note.setTitle(cursor.getString(1));
                 note.setNote(cursor.getString(2));
+                note.setDate(cursor.getString(3));
                 noteArrayList.add(note);
             } while (cursor.moveToNext());
         }
@@ -138,16 +140,16 @@ public class NotesDbAdapter {
     }
 
     /**
-     * Return a Cursor positioned at the note that matches the given rowId
+     * Return a Note which has the rowId
      *
      * @param rowId id of note to retrieve
-     * @return Cursor positioned to matching note, if found
+     * @return Note of that id, if found
      * @throws SQLException if note could not be found/retrieved
      */
     public Note fetchNote(long rowId) throws SQLException {
 
         Cursor mCursor = mDb.query(true, DATABASE_TABLE, new String[]
-                        {KEY_ROWID, KEY_TITLE, KEY_BODY},
+                        {KEY_ROWID, KEY_TITLE, KEY_BODY, KEY_DATE},
                 KEY_ROWID + "=" + rowId, null, null, null, null, null);
         if (mCursor != null) {
             mCursor.moveToFirst();
@@ -157,23 +159,26 @@ public class NotesDbAdapter {
         note.setId(Long.parseLong(mCursor.getString(0)));
         note.setTitle(mCursor.getString(1));
         note.setNote(mCursor.getString(2));
+        note.setDate(mCursor.getString(3));
         return note;
     }
 
     /**
      * Update the note using the details provided. The note to be updated is
-     * specified using the rowId, and it is altered to use the title and body
+     * specified using the rowId, and it is altered to use the title, body and date
      * values passed in
      *
      * @param rowId id of note to update
      * @param title value to set note title to
      * @param body value to set note body to
+     * @param date value to set note date to
      * @return true if the note was successfully updated, false otherwise
      */
-    public boolean updateNote(long rowId, String title, String body) {
+    public boolean updateNote(long rowId, String title, String body, String date) {
         ContentValues args = new ContentValues();
         args.put(KEY_TITLE, title);
         args.put(KEY_BODY, body);
+        args.put(KEY_DATE, date);
 
         return mDb.update(DATABASE_TABLE, args, KEY_ROWID + "=" + rowId, null) > 0;
     }

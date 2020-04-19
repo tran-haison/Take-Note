@@ -10,9 +10,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import firstproject.tranhaison.takenote.Note;
 import firstproject.tranhaison.takenote.NotesDbAdapter;
@@ -25,6 +29,7 @@ public class AddNoteActivity extends AppCompatActivity {
 
     NotesDbAdapter myDB;
     EditText editTextTitle, editTextNote;
+    TextView textViewDate;
     Toolbar toolbarAddNote;
     FloatingActionButton floatingActionButtonAdd;
 
@@ -38,6 +43,7 @@ public class AddNoteActivity extends AppCompatActivity {
 
         editTextTitle = (EditText) findViewById(R.id.editTextTitle);
         editTextNote = (EditText) findViewById(R.id.editTextNote);
+        textViewDate = (TextView) findViewById(R.id.textViewDate);
         floatingActionButtonAdd = (FloatingActionButton) findViewById(R.id.floatingActionButtonAdd);
         toolbarAddNote = (Toolbar) findViewById(R.id.toolBarAddNote);
         setSupportActionBar(toolbarAddNote);
@@ -77,6 +83,10 @@ public class AddNoteActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+                Date date = new Date();
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm dd/MM/yyyy");
+                String currentDate = simpleDateFormat.format(date);
+
                 String title = editTextTitle.getText().toString();
                 String note_text = editTextNote.getText().toString();
 
@@ -86,7 +96,7 @@ public class AddNoteActivity extends AppCompatActivity {
                     overridePendingTransition(R.anim.anim_enter_from_right, R.anim.anim_exit_to_left);
                 }
                 else {
-                    myDB.createNote(title, note_text);
+                    myDB.createNote(title, note_text, currentDate);
                     Intent intent = new Intent(AddNoteActivity.this, ViewNoteActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
@@ -113,6 +123,7 @@ public class AddNoteActivity extends AppCompatActivity {
         if (editedNote != null) {
             editTextTitle.setText(editedNote.getTitle());
             editTextNote.setText(editedNote.getNote());
+            textViewDate.setText(editedNote.getDate());
         }
 
         return editedNote;
@@ -130,6 +141,10 @@ public class AddNoteActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent();
 
+                Date date = new Date();
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm dd/MM/yyyy");
+                String currentDate = simpleDateFormat.format(date);
+
                 String title = editTextTitle.getText().toString();
                 String note = editTextNote.getText().toString();
 
@@ -139,14 +154,14 @@ public class AddNoteActivity extends AppCompatActivity {
                     overridePendingTransition(R.anim.anim_enter_from_right, R.anim.anim_exit_to_left);
                 }
                 else {
-                    boolean isEdited = myDB.updateNote(editedNote.getId(), title, note);
+                    boolean isEdited = myDB.updateNote(editedNote.getId(), title, note, currentDate);
                     if (isEdited) {
                         intent.putExtra("isEdited", RESULT_OK);
                         setResult(RESULT_OK, intent);
                         finish();
                         overridePendingTransition(R.anim.anim_enter_from_right, R.anim.anim_exit_to_left);
                     } else {
-                        myDB.createNote(title, note);
+                        myDB.createNote(title, note, currentDate);
                         intent = new Intent(AddNoteActivity.this, ViewNoteActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(intent);
