@@ -16,11 +16,4 @@
         android:orderInCategory="100"
         app:showAsAction="always" />
 
-    <item
-        android:id="@+id/menu_view_note_delete"
-        android:icon="@drawable/ic_delete_48dp"
-        android:title="Delete"
-        android:orderInCategory="100"
-        app:showAsAction="ifRoom" />
-
 </menu>

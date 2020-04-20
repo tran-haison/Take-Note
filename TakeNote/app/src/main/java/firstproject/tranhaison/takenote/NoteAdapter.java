@@ -1,17 +1,14 @@
 package firstproject.tranhaison.takenote;
 
 import android.content.Context;
-import android.content.DialogInterface;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
-
-import androidx.appcompat.app.AlertDialog;
 
 import java.util.List;
 
@@ -25,12 +22,14 @@ public class NoteAdapter extends BaseAdapter {
     private int layout;
     private List<Note> noteList;
     private NotesDbAdapter db;
+    private SparseBooleanArray selectedItem;
 
     public NoteAdapter(NotesDbAdapter db, Context context, int layout, List<Note> noteList) {
         this.db = db;
         this.context = context;
         this.layout = layout;
         this.noteList = noteList;
+        selectedItem = new SparseBooleanArray();
     }
 
     /**
@@ -70,7 +69,6 @@ public class NoteAdapter extends BaseAdapter {
      */
     private class ViewHolder {
         TextView textViewTitle, textViewNote;
-        ImageView imageViewDelete;
     }
 
     /**
@@ -99,7 +97,6 @@ public class NoteAdapter extends BaseAdapter {
             viewHolder = new ViewHolder();
             viewHolder.textViewTitle = (TextView) convertView.findViewById(R.id.textViewTitle);
             viewHolder.textViewNote = (TextView) convertView.findViewById(R.id.textViewNote);
-            viewHolder.imageViewDelete = (ImageView) convertView.findViewById(R.id.imageViewDelete);
 
             convertView.setTag(viewHolder);
         } else {
@@ -110,13 +107,6 @@ public class NoteAdapter extends BaseAdapter {
         viewHolder.textViewTitle.setText(note.getTitle());
         viewHolder.textViewNote.setText(note.getNote());
 
-        viewHolder.imageViewDelete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                deleteDialog(position);
-            }
-        });
-
         Animation animation = AnimationUtils.loadAnimation(context, R.anim.anim_listview);
         convertView.startAnimation(animation);
 
@@ -124,34 +114,50 @@ public class NoteAdapter extends BaseAdapter {
     }
 
     /**
-     * Display a dialog to ask user to delete a note or not
-     * Click "OK" to delete the note
-     * Click "Cancel" to cancel
-     * @param position
+     * Delete a note in ListView
      */
-    private void deleteDialog(final long position) {
-        final AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
-        alertDialog.setTitle("NOTE DELETE");
-        alertDialog.setMessage("Do you want to delete this note?");
-
-        alertDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                db.deleteNote(noteList.get((int) position).getId());
-                noteList.clear();
-                noteList = db.fetchAllNotes();
-                notifyDataSetChanged();
-            }
-        });
-
-        alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-            }
-        });
-
-        alertDialog.show();
+    public void remove(Note note) {
+        db.deleteNote(note.getId());
+        noteList.clear();
+        noteList = db.fetchAllNotes();
+        notifyDataSetChanged();
     }
 
+    /**
+     * If no note is selected -> return to normal
+     */
+    public void removeSelection() {
+        selectedItem = new SparseBooleanArray();
+        notifyDataSetChanged();
+    }
+
+    /**
+     * Put a selected note into selectedItem
+     * otherwise delete from selectedItem
+     * @param position
+     * @param isSelected
+     */
+    public void selectView(int position, boolean isSelected) {
+        if (isSelected) {
+            selectedItem.put(position, true);
+        } else {
+            selectedItem.delete(position);
+        }
+    }
+
+    /**
+     * Notify if the note is selected or not
+     * @param position
+     */
+    public void toggleSelection(int position) {
+        selectView(position, !selectedItem.get(position));
+    }
+
+    /**
+     * Return the Array of selected notes
+     * @return
+     */
+    public SparseBooleanArray getSelectedID() {
+        return selectedItem;
+    }
 }

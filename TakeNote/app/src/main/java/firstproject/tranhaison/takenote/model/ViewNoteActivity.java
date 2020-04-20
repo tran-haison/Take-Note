@@ -7,9 +7,12 @@ import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.SparseBooleanArray;
+import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -67,10 +70,12 @@ public class ViewNoteActivity extends AppCompatActivity {
          */
         noteAdapter = new NoteAdapter(myDB,ViewNoteActivity.this, R.layout.note_layout, noteArrayList);
         listViewNote.setAdapter(noteAdapter);
+        listViewNote.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
 
         getNotes();
         addNewNote();
         editNote();
+        deleteMultiNotes();
     }
 
     @Override
@@ -89,10 +94,6 @@ public class ViewNoteActivity extends AppCompatActivity {
             case R.id.menu_view_note_photo:
                 // TODO
                 Toast.makeText(this, "photo", Toast.LENGTH_SHORT).show();
-                break;
-            case R.id.menu_view_note_delete:
-                // TODO
-                Toast.makeText(this, "delete", Toast.LENGTH_SHORT).show();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -159,4 +160,60 @@ public class ViewNoteActivity extends AppCompatActivity {
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
+
+    /**
+     * Delete multiple notes when long click at least one
+     */
+    private void deleteMultiNotes() {
+        listViewNote.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
+            @Override
+            public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
+                // Capture total items checked
+                final int checkedCount = listViewNote.getCheckedItemCount();
+
+                // Set the title according to total check items
+                mode.setTitle(String.valueOf(checkedCount));
+
+                // Calls toggleSelection method from NoteAdapter class
+                noteAdapter.toggleSelection(position);
+            }
+
+            @Override
+            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                mode.getMenuInflater().inflate(R.menu.menu_multi_items_click, menu);
+                return true;
+            }
+
+            @Override
+            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                return false;
+            }
+
+            @Override
+            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.menu_multi_item_delete:
+                        SparseBooleanArray selected = noteAdapter.getSelectedID();
+
+                        // Capture all selected ID with a loop
+                        // Delete all selected notes
+                        for (int i=(selected.size() - 1); i>=0; i--) {
+                            Note selectedNote = (Note) noteAdapter.getItem(selected.keyAt(i));
+                            noteAdapter.remove(selectedNote);
+                        }
+                        // Close CAB
+                        mode.finish();
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+
+            @Override
+            public void onDestroyActionMode(ActionMode mode) {
+                noteAdapter.removeSelection();
+            }
+        });
+    }
+
 }
