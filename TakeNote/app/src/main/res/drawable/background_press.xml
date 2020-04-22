@@ -9,7 +9,7 @@
         android:right="15dp" />
 
     <solid
-        android:color="#80806E" />
+        android:color="#545450" />
 
     <corners
         android:radius="5dp" />

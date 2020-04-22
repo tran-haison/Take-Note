@@ -3,10 +3,15 @@ package firstproject.tranhaison.takenote.model;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.SparseBooleanArray;
 import android.view.ActionMode;
 import android.view.Menu;
@@ -14,11 +19,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 import firstproject.tranhaison.takenote.Note;
@@ -42,8 +52,11 @@ public class ViewNoteActivity extends AppCompatActivity {
     Toolbar toolbar;
     FloatingActionButton floatingActionButtonAdd;
     NoteAdapter noteAdapter;
+    ImageButton imageButtonPhoto;
 
     final int REQUEST_CODE_EDIT = 1;
+    final int REQUEST_CODE_CAMERA = 2;
+    final int REQUEST_CODE_FOLDER = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,9 +91,70 @@ public class ViewNoteActivity extends AppCompatActivity {
         deleteMultiNotes();
     }
 
+    /**
+     * Show the icon in Popup Menu
+     * @param popupMenu
+     */
+    public static void setForceShowIcon(PopupMenu popupMenu) {
+        try {
+            Field[] fields = popupMenu.getClass().getDeclaredFields();
+            for (Field field : fields) {
+                if ("mPopup".equals(field.getName())) {
+                    field.setAccessible(true);
+                    Object menuPopupHelper = field.get(popupMenu);
+                    Class<?> classPopupHelper = Class.forName(menuPopupHelper
+                            .getClass().getName());
+                    Method setForceIcons = classPopupHelper.getMethod(
+                            "setForceShowIcon", boolean.class);
+                    setForceIcons.invoke(menuPopupHelper, true);
+                    break;
+                }
+            }
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Display the popup menu when clicking the photo icon
+     * to let user take photo or choose image from library
+     */
+    private void popupMenuPhoto() {
+        PopupMenu popupMenu = new androidx.appcompat.widget.PopupMenu(this, imageButtonPhoto);
+        popupMenu.getMenuInflater().inflate(R.menu.menu_popup_photo, popupMenu.getMenu());
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.menu_context_photo_camera:
+                        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                        startActivityForResult(intent, REQUEST_CODE_CAMERA);
+                        break;
+                    case R.id.menu_context_photo_library:
+                        Intent intent1 = new Intent(Intent.ACTION_PICK);
+                        intent1.setType("image/*");
+                        startActivityForResult(intent1, REQUEST_CODE_FOLDER);
+                        break;
+                }
+                return false;
+            }
+        });
+        setForceShowIcon(popupMenu);
+        popupMenu.show();
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_view_note_activity, menu);
+
+        imageButtonPhoto = (ImageButton) menu.findItem(R.id.menu_view_note_photo).getActionView();
+        imageButtonPhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                popupMenuPhoto();
+            }
+        });
+
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -93,7 +167,6 @@ public class ViewNoteActivity extends AppCompatActivity {
                 break;
             case R.id.menu_view_note_photo:
                 // TODO
-                Toast.makeText(this, "photo", Toast.LENGTH_SHORT).show();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -158,6 +231,26 @@ public class ViewNoteActivity extends AppCompatActivity {
         if (requestCode == REQUEST_CODE_EDIT && resultCode == RESULT_OK && data != null) {
             Toast.makeText(this, "Note updated", Toast.LENGTH_SHORT).show();
         }
+        if (requestCode == REQUEST_CODE_CAMERA && resultCode == RESULT_OK && data != null) {
+            Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+            Intent intent = new Intent(ViewNoteActivity.this, AddNoteActivity.class);
+            intent.putExtra("take_photo", bitmap);
+            startActivity(intent);
+            overridePendingTransition(R.anim.anim_enter_from_left, R.anim.anim_exit_to_right);
+        }
+        if (requestCode == REQUEST_CODE_FOLDER && resultCode == RESULT_OK && data != null) {
+            Uri uri = data.getData();
+            try {
+                InputStream inputStream = getContentResolver().openInputStream(uri);
+                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                Intent intent = new Intent(ViewNoteActivity.this, AddNoteActivity.class);
+                intent.putExtra("choose_photo", bitmap);
+                startActivity(intent);
+                overridePendingTransition(R.anim.anim_enter_from_left, R.anim.anim_exit_to_right);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
         super.onActivityResult(requestCode, resultCode, data);
     }
 
@@ -194,7 +287,6 @@ public class ViewNoteActivity extends AppCompatActivity {
                 switch (item.getItemId()) {
                     case R.id.menu_multi_item_delete:
                         SparseBooleanArray selected = noteAdapter.getSelectedID();
-
                         // Capture all selected ID with a loop
                         // Delete all selected notes
                         for (int i=(selected.size() - 1); i>=0; i--) {

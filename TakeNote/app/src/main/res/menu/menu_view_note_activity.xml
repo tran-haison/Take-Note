@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+<menu
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
         android:id="@+id/menu_view_note_search"
-        android:icon="@drawable/ic_search_48dp"
+        android:icon="@drawable/ic_search_24dp"
         android:title="Search"
-        android:orderInCategory="100"
         app:showAsAction="always" />
 
     <item
         android:id="@+id/menu_view_note_photo"
-        android:icon="@drawable/ic_photo_48dp"
+        android:actionLayout="@layout/photo_layout"
+        app:actionViewClass="android.widget.ImageButton"
         android:title="Photo"
-        android:orderInCategory="100"
         app:showAsAction="always" />
 
 </menu>

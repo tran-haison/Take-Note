@@ -107,8 +107,8 @@ public class NoteAdapter extends BaseAdapter {
         viewHolder.textViewTitle.setText(note.getTitle());
         viewHolder.textViewNote.setText(note.getNote());
 
-        Animation animation = AnimationUtils.loadAnimation(context, R.anim.anim_listview);
-        convertView.startAnimation(animation);
+        //Animation animation = AnimationUtils.loadAnimation(context, R.anim.anim_listview);
+        //convertView.startAnimation(animation);
 
         return convertView;
     }
