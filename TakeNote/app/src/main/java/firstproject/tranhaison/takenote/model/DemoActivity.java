@@ -16,7 +16,6 @@ import firstproject.tranhaison.takenote.R;
 
 public class DemoActivity extends AppCompatActivity {
 
-    Toolbar toolbarAddNote;
     FloatingActionButton floatingActionButtonAdd;
 
     @Override
@@ -25,8 +24,6 @@ public class DemoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_demo);
 
         floatingActionButtonAdd = (FloatingActionButton) findViewById(R.id.floatingActionButtonAdd);
-        toolbarAddNote = (Toolbar) findViewById(R.id.toolBarAddNote);
-        setSupportActionBar(toolbarAddNote);
 
         fabAdd();
 
@@ -43,20 +40,20 @@ public class DemoActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_add_note_activity, menu);
+        getMenuInflater().inflate(R.menu.menu_view_note_activity, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_add_note_photo:
+            case R.id.menu_view_note_search:
+                // TODO
+                Toast.makeText(this, "search", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.menu_view_note_photo:
                 // TODO
                 Toast.makeText(this, "photo", Toast.LENGTH_SHORT).show();
-                break;
-            case R.id.menu_add_note_delete:
-                // TODO
-                Toast.makeText(this, "delete", Toast.LENGTH_SHORT).show();
                 break;
         }
         return super.onOptionsItemSelected(item);

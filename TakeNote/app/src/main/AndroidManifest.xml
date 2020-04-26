@@ -3,6 +3,7 @@
     package="firstproject.tranhaison.takenote">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:allowBackup="true"
@@ -10,7 +11,7 @@
         android:label="@string/empty"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+        android:theme="@style/AppTheme">
         <activity android:name=".model.DemoActivity"></activity>
         <activity android:name=".model.ViewNoteActivity" />
         <activity android:name=".model.AddNoteActivity" />

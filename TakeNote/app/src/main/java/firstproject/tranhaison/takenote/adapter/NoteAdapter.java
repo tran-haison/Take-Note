@@ -1,16 +1,20 @@
-package firstproject.tranhaison.takenote;
+package firstproject.tranhaison.takenote.adapter;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
+
+import firstproject.tranhaison.takenote.Image;
+import firstproject.tranhaison.takenote.Note;
+import firstproject.tranhaison.takenote.R;
 
 /**
  * NoteAdapter is used to connect between an ArrayList (which keeps all the notes)
@@ -69,6 +73,7 @@ public class NoteAdapter extends BaseAdapter {
      */
     private class ViewHolder {
         TextView textViewTitle, textViewNote;
+        ImageView imageViewPhotoNote;
     }
 
     /**
@@ -90,14 +95,13 @@ public class NoteAdapter extends BaseAdapter {
         if (convertView == null) {
             // Call layoutInflater
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
             // Set convertView as note's layout
             convertView = inflater.inflate(layout, null);
 
             viewHolder = new ViewHolder();
             viewHolder.textViewTitle = (TextView) convertView.findViewById(R.id.textViewTitle);
             viewHolder.textViewNote = (TextView) convertView.findViewById(R.id.textViewNote);
-
+            viewHolder.imageViewPhotoNote = (ImageView) convertView.findViewById(R.id.imageViewPhotoNote);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
@@ -107,8 +111,11 @@ public class NoteAdapter extends BaseAdapter {
         viewHolder.textViewTitle.setText(note.getTitle());
         viewHolder.textViewNote.setText(note.getNote());
 
-        //Animation animation = AnimationUtils.loadAnimation(context, R.anim.anim_listview);
-        //convertView.startAnimation(animation);
+        if (note.getImage() != null) {
+            Image imageNote = new Image(note.getImage());
+            Bitmap bitmapImage = imageNote.convertToBitmap();
+            imageNote.rescaleBitmap(bitmapImage, viewHolder.imageViewPhotoNote);
+        }
 
         return convertView;
     }

@@ -6,8 +6,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <LinearLayout
-        android:id="@+id/linearLayout1"
-        android:layout_width="0dp"
+        android:id="@+id/linearLayoutNote"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:weightSum="10"
@@ -16,12 +16,22 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <ImageView
+            android:id="@+id/imageViewPhotoNote"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.1"
+            android:contentDescription="@string/todo"
+            android:src="@drawable/ic_photo_white_1dp"
+            android:maxHeight="150dp" />
+
         <TextView
             android:id="@+id/textViewTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:fontFamily="@font/balootamma_semibold"
+            android:maxHeight="75dp"
             android:padding="7dp"
             android:text="@string/title"
             android:textColor="#000000"
@@ -31,8 +41,9 @@
             android:id="@+id/textViewNote"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="9"
+            android:layout_weight="8.9"
             android:fontFamily="@font/balootamma_regular"
+            android:maxHeight="100dp"
             android:padding="7dp"
             android:text="@string/note"
             android:textColor="#000000"

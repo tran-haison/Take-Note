@@ -38,7 +38,9 @@
         android:layout_marginStart="4dp"
         android:layout_marginTop="4dp"
         android:layout_marginEnd="4dp"
+        android:background="@null"
         android:ems="10"
+        android:fontFamily="@font/balootamma_medium"
         android:hint="@string/title"
         android:importantForAutofill="no"
         android:inputType="textPersonName"
@@ -47,21 +49,19 @@
         android:textColor="#000000"
         android:textColorHint="#545450"
         android:textSize="22sp"
-        android:fontFamily="@font/balootamma_medium"
-        android:background="@null"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolBarAddNote" />
+        app:layout_constraintTop_toBottomOf="@+id/imageViewPhoto" />
 
     <EditText
         android:id="@+id/editTextNote"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="4dp"
-        android:layout_marginTop="4dp"
         android:layout_marginEnd="4dp"
         android:background="@null"
         android:ems="10"
+        android:fontFamily="@font/balootamma_regular"
         android:gravity="start|top"
         android:hint="@string/note"
         android:importantForAutofill="no"
@@ -70,7 +70,6 @@
         android:textColor="#000000"
         android:textColorHint="#545450"
         android:textSize="18sp"
-        android:fontFamily="@font/balootamma_regular"
         app:layout_constraintBottom_toTopOf="@+id/textViewDate"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -92,6 +91,19 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageViewPhoto"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
+        android:contentDescription="@string/todo"
+        android:maxHeight="250dp"
+        android:src="@drawable/ic_photo_white_1dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolBarAddNote" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

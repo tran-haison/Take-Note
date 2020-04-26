@@ -5,11 +5,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,8 +20,9 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import firstproject.tranhaison.takenote.Image;
 import firstproject.tranhaison.takenote.Note;
-import firstproject.tranhaison.takenote.NotesDbAdapter;
+import firstproject.tranhaison.takenote.adapter.NotesDbAdapter;
 import firstproject.tranhaison.takenote.R;
 
 /**
@@ -30,6 +33,7 @@ public class AddNoteActivity extends AppCompatActivity {
     NotesDbAdapter myDB;
     EditText editTextTitle, editTextNote;
     TextView textViewDate;
+    ImageView imageViewPhoto;
     Toolbar toolbarAddNote;
     FloatingActionButton floatingActionButtonAdd;
 
@@ -44,9 +48,13 @@ public class AddNoteActivity extends AppCompatActivity {
         editTextTitle = (EditText) findViewById(R.id.editTextTitle);
         editTextNote = (EditText) findViewById(R.id.editTextNote);
         textViewDate = (TextView) findViewById(R.id.textViewDate);
+        imageViewPhoto = (ImageView) findViewById(R.id.imageViewPhoto);
         floatingActionButtonAdd = (FloatingActionButton) findViewById(R.id.floatingActionButtonAdd);
         toolbarAddNote = (Toolbar) findViewById(R.id.toolBarAddNote);
         setSupportActionBar(toolbarAddNote);
+
+        getCameraImage();
+        getFolderImage();
 
         addNewNote();
         Note editedNote = getEditedNote();
@@ -76,7 +84,8 @@ public class AddNoteActivity extends AppCompatActivity {
 
     /**
      * Add a new note to database after filling in both Title and Note
-     * if at least 1 field was missed, user has to fill it
+     * if both fields are missed, note discarded
+     * otherwise add a new note
      */
     private void addNewNote() {
         floatingActionButtonAdd.setOnClickListener(new View.OnClickListener() {
@@ -89,14 +98,22 @@ public class AddNoteActivity extends AppCompatActivity {
 
                 String title = editTextTitle.getText().toString();
                 String note_text = editTextNote.getText().toString();
+                byte[] imageCamera = getCameraImage();
+                byte[] imageFolder = getFolderImage();
 
-                if (title.isEmpty() && note_text.isEmpty()) {
+                if (title.isEmpty() && note_text.isEmpty() && imageCamera == null && imageFolder == null) {
                     Toast.makeText(AddNoteActivity.this, "Empty note discarded", Toast.LENGTH_SHORT).show();
                     finish();
                     overridePendingTransition(R.anim.anim_enter_from_right, R.anim.anim_exit_to_left);
                 }
                 else {
-                    myDB.createNote(title, note_text, currentDate);
+                    if (imageCamera != null && imageFolder == null) {
+                        myDB.createNote(title, note_text, currentDate, imageCamera);
+                    } else if (imageCamera == null && imageFolder != null) {
+                        myDB.createNote(title, note_text, currentDate, imageFolder);
+                    } else {
+                        myDB.createNote(title, note_text, currentDate, null);
+                    }
                     Intent intent = new Intent(AddNoteActivity.this, ViewNoteActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
@@ -104,6 +121,42 @@ public class AddNoteActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    /**
+     * Get the image after taking photo or the image in user's folder
+     * then display in the ImageView
+     */
+    private byte[] getCameraImage() {
+        Intent intent = getIntent();
+        Bundle bundle = intent.getBundleExtra("take_photo");
+
+        Image cameraImage = new Image();
+
+        if (bundle != null) {
+            cameraImage.setImage(bundle.getByteArray("imageCamera"));
+            Bitmap bitmap = cameraImage.convertToBitmap();
+            if (bitmap != null) {
+                cameraImage.rescaleBitmap(bitmap, imageViewPhoto);
+            }
+        }
+        return cameraImage.getImage();
+    }
+
+    private byte[] getFolderImage() {
+        Intent intent = getIntent();
+        Bundle bundle = intent.getBundleExtra("choose_photo");
+
+        Image folderImage = new Image();
+
+        if (bundle != null) {
+            folderImage.setImage(bundle.getByteArray("imageFolder"));
+            Bitmap bitmap = folderImage.convertToBitmap();
+            if (bitmap != null) {
+                folderImage.rescaleBitmap(bitmap, imageViewPhoto);
+            }
+        }
+        return folderImage.getImage();
     }
 
     /**
@@ -124,6 +177,12 @@ public class AddNoteActivity extends AppCompatActivity {
             editTextTitle.setText(editedNote.getTitle());
             editTextNote.setText(editedNote.getNote());
             textViewDate.setText(editedNote.getDate());
+
+            if (editedNote.getImage() != null) {
+                Image imageNote = new Image(editedNote.getImage());
+                Bitmap bitmapImage = imageNote.convertToBitmap();
+                imageNote.rescaleBitmap(bitmapImage, imageViewPhoto);
+            }
         }
 
         return editedNote;
@@ -147,21 +206,28 @@ public class AddNoteActivity extends AppCompatActivity {
 
                 String title = editTextTitle.getText().toString();
                 String note = editTextNote.getText().toString();
-
-                if (title.equals("") && note.equals("")) {
+                Image image = new Image(editedNote.getImage());
+                /**
+                 * If all fields are empty -> discard note
+                 * otherwise update the note depend on the note ID
+                 * A note must have at least title or note or image
+                 */
+                if (title.equals("") && note.equals("") && image.getImage() == null) {
                     Toast.makeText(AddNoteActivity.this, "Empty note discarded", Toast.LENGTH_SHORT).show();
                     finish();
                     overridePendingTransition(R.anim.anim_enter_from_right, R.anim.anim_exit_to_left);
                 }
                 else {
-                    boolean isEdited = myDB.updateNote(editedNote.getId(), title, note, currentDate);
+                    boolean isEdited;
+                    isEdited = myDB.updateNote(editedNote.getId(), title, note, currentDate, image.getImage());
+
                     if (isEdited) {
                         intent.putExtra("isEdited", RESULT_OK);
                         setResult(RESULT_OK, intent);
                         finish();
                         overridePendingTransition(R.anim.anim_enter_from_right, R.anim.anim_exit_to_left);
                     } else {
-                        myDB.createNote(title, note, currentDate);
+                        myDB.createNote(title, note, currentDate, image.getImage());
                         intent = new Intent(AddNoteActivity.this, ViewNoteActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(intent);

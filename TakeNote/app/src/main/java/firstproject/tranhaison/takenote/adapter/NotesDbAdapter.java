@@ -1,4 +1,4 @@
-package firstproject.tranhaison.takenote;
+package firstproject.tranhaison.takenote.adapter;
 
 import android.content.Context;
 import android.database.SQLException;
@@ -11,6 +11,8 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
+import firstproject.tranhaison.takenote.Note;
+
 /**
  * Simple notes database access helper class. Defines the basic CRUD operations
  * for the notepad example, and gives the ability to list all notes as well as
@@ -22,6 +24,7 @@ public class NotesDbAdapter {
     public static final String KEY_TITLE = "title";
     public static final String KEY_BODY = "body";
     public static final String KEY_DATE = "date";
+    public static final String KEY_IMAGE = "image";
 
     private static final String TAG = "NotesDbAdapter";
     private DatabaseHelper mDbHelper;
@@ -31,8 +34,8 @@ public class NotesDbAdapter {
      * Database creation sql statement
      */
     private static final String DATABASE_CREATE =
-            "create table notes (_id integer primary key autoincrement, "
-                    + "title text not null, body text not null, date text not null);";
+            "create table notes (_id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    + "title TEXT NOT NULL, body TEXT NOT NULL, date TEXT NOT NULL, image BLOB DEFAULT NULL);";
 
     private static final String DATABASE_NAME = "data";
     private static final String DATABASE_TABLE = "notes";
@@ -93,14 +96,15 @@ public class NotesDbAdapter {
      * @param title the title of the note
      * @param body the body of the note
      * @param date the date of the note
+     * @param image the image of the note (if exists)
      * @return rowId or -1 if failed
      */
-    public long createNote(String title, String body, String date) {
+    public long createNote(String title, String body, String date, byte[] image) {
         ContentValues initialValues = new ContentValues();
         initialValues.put(KEY_TITLE, title);
         initialValues.put(KEY_BODY, body);
         initialValues.put(KEY_DATE, date);
-
+        initialValues.put(KEY_IMAGE, image);
         return mDb.insert(DATABASE_TABLE, null, initialValues);
     }
 
@@ -110,7 +114,6 @@ public class NotesDbAdapter {
      * @return true if deleted, false otherwise
      */
     public boolean deleteNote(long rowId) {
-
         return mDb.delete(DATABASE_TABLE, KEY_ROWID + "=" + rowId, null) > 0;
     }
 
@@ -119,9 +122,8 @@ public class NotesDbAdapter {
      * @return ArrayList of all notes
      */
     public ArrayList<Note> fetchAllNotes() {
-
-        Cursor cursor = mDb.query(DATABASE_TABLE, new String[] {KEY_ROWID, KEY_TITLE,
-                KEY_BODY, KEY_DATE}, null, null, null, null, null);
+        Cursor cursor = mDb.query(DATABASE_TABLE, new String[] {KEY_ROWID, KEY_TITLE, KEY_BODY, KEY_DATE, KEY_IMAGE},
+                null, null, null, null, null);
 
         ArrayList<Note> noteArrayList = new ArrayList<>();
 
@@ -132,6 +134,7 @@ public class NotesDbAdapter {
                 note.setTitle(cursor.getString(1));
                 note.setNote(cursor.getString(2));
                 note.setDate(cursor.getString(3));
+                note.setImage(cursor.getBlob(4));
                 noteArrayList.add(note);
             } while (cursor.moveToNext());
         }
@@ -141,16 +144,14 @@ public class NotesDbAdapter {
 
     /**
      * Return a Note which has the rowId
-     *
      * @param rowId id of note to retrieve
      * @return Note of that id, if found
      * @throws SQLException if note could not be found/retrieved
      */
     public Note fetchNote(long rowId) throws SQLException {
-
-        Cursor mCursor = mDb.query(true, DATABASE_TABLE, new String[]
-                        {KEY_ROWID, KEY_TITLE, KEY_BODY, KEY_DATE},
+        Cursor mCursor = mDb.query(true, DATABASE_TABLE, new String[] {KEY_ROWID, KEY_TITLE, KEY_BODY, KEY_DATE, KEY_IMAGE},
                 KEY_ROWID + "=" + rowId, null, null, null, null, null);
+
         if (mCursor != null) {
             mCursor.moveToFirst();
         }
@@ -160,6 +161,7 @@ public class NotesDbAdapter {
         note.setTitle(mCursor.getString(1));
         note.setNote(mCursor.getString(2));
         note.setDate(mCursor.getString(3));
+        note.setImage(mCursor.getBlob(4));
         return note;
     }
 
@@ -174,11 +176,12 @@ public class NotesDbAdapter {
      * @param date value to set note date to
      * @return true if the note was successfully updated, false otherwise
      */
-    public boolean updateNote(long rowId, String title, String body, String date) {
+    public boolean updateNote(long rowId, String title, String body, String date, byte[] image) {
         ContentValues args = new ContentValues();
         args.put(KEY_TITLE, title);
         args.put(KEY_BODY, body);
         args.put(KEY_DATE, date);
+        args.put(KEY_IMAGE, image);
 
         return mDb.update(DATABASE_TABLE, args, KEY_ROWID + "=" + rowId, null) > 0;
     }

@@ -8,28 +8,16 @@ import java.io.Serializable;
  * 2. Title of the note
  * 3. Note
  * 4. Date of the note
+ * 5. The image of the note (if has)
  */
 public class Note implements Serializable {
     private long id;
     private String title;
     private String note;
     private String date;
+    private byte[] image;
 
     public Note() {
-
-    }
-
-    public Note(long id, String title, String note, String date) {
-        this.id = id;
-        this.title = title;
-        this.note = note;
-        this.date = date;
-    }
-
-    public Note(String title, String note, String date) {
-        this.title = title;
-        this.note = note;
-        this.date = date;
     }
 
     public long getId() {
@@ -62,5 +50,13 @@ public class Note implements Serializable {
 
     public void setDate(String date) {
         this.date = date;
+    }
+
+    public byte[] getImage() {
+        return image;
+    }
+
+    public void setImage(byte[] image) {
+        this.image = image;
     }
 }
