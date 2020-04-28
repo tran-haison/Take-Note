@@ -191,6 +191,12 @@ public class ViewNoteActivity extends AppCompatActivity {
      * if "yes" -> convert to byte[] and send to AddNoteActivity
      * 3. Check to see if user choose an image from folder
      * if "yes" -> convert to byte[] and send to AddNoteActivity
+     *
+     * Put byte array into Bundle
+     * then put Bundle into intent and call activity
+     * We do not put byte array straight into intent because it might be null
+     * when you first open AddNoteActivity instead of ViewNoteActivity
+     * The App will going to crash
      * @param requestCode
      * @param resultCode
      * @param data
@@ -199,6 +205,7 @@ public class ViewNoteActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == REQUEST_CODE_EDIT && resultCode == RESULT_OK && data != null) {
             Toast.makeText(this, "Note updated", Toast.LENGTH_SHORT).show();
+            noteAdapter.notifyDataSetChanged();
         }
 
         if (requestCode == REQUEST_CODE_CAMERA && resultCode == RESULT_OK && data != null) {
@@ -207,13 +214,6 @@ public class ViewNoteActivity extends AppCompatActivity {
             Image image = new Image();
             byte[] imageToByte = image.convertFromBitmap(bitmap);
 
-            /**
-             * Put byte array into Bundle
-             * then put Bundle into intent and call activity
-             * We do not put byte array straight into intent because it might be null
-             * when you first open AddNoteActivity instead of ViewNoteActivity
-             * The App will going to crash
-             */
             Bundle bundle = new Bundle();
             bundle.putByteArray("imageCamera", imageToByte);
             Intent intent = new Intent(ViewNoteActivity.this, AddNoteActivity.class);
@@ -337,7 +337,7 @@ public class ViewNoteActivity extends AppCompatActivity {
 
             @Override
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                mode.getMenuInflater().inflate(R.menu.menu_multi_items_click, menu);
+                mode.getMenuInflater().inflate(R.menu.menu_multi_choice_mode, menu);
                 return true;
             }
 
@@ -355,7 +355,8 @@ public class ViewNoteActivity extends AppCompatActivity {
                         // Delete all selected notes
                         for (int i=(selected.size() - 1); i>=0; i--) {
                             Note selectedNote = (Note) noteAdapter.getItem(selected.keyAt(i));
-                            noteAdapter.remove(selectedNote);
+                            myDB.deleteNote(selectedNote.getId());
+                            getNotes();
                         }
                         // Close CAB
                         mode.finish();

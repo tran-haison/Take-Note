@@ -4,11 +4,11 @@ import java.io.Serializable;
 
 /**
  * This class Note is used to store the information about a note:
- * 1. ID of the note
+ * 1. ID of the note (Auto increment, user can only read)
  * 2. Title of the note
  * 3. Note
- * 4. Date of the note
- * 5. The image of the note (if has)
+ * 4. Date of the note (automatically added)
+ * 5. The image of the note
  */
 public class Note implements Serializable {
     private long id;

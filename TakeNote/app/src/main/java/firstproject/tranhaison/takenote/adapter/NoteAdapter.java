@@ -121,16 +121,6 @@ public class NoteAdapter extends BaseAdapter {
     }
 
     /**
-     * Delete a note in ListView
-     */
-    public void remove(Note note) {
-        db.deleteNote(note.getId());
-        noteList.clear();
-        noteList = db.fetchAllNotes();
-        notifyDataSetChanged();
-    }
-
-    /**
      * If no note is selected -> return to normal
      */
     public void removeSelection() {

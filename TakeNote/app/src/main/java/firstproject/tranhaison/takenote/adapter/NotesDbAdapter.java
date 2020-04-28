@@ -35,7 +35,7 @@ public class NotesDbAdapter {
      */
     private static final String DATABASE_CREATE =
             "create table notes (_id INTEGER PRIMARY KEY AUTOINCREMENT, "
-                    + "title TEXT NOT NULL, body TEXT NOT NULL, date TEXT NOT NULL, image BLOB DEFAULT NULL);";
+                    + "title TEXT NOT NULL, body TEXT NOT NULL, date VARCHAR(30) NOT NULL, image BLOB DEFAULT NULL);";
 
     private static final String DATABASE_NAME = "data";
     private static final String DATABASE_TABLE = "notes";
@@ -184,5 +184,22 @@ public class NotesDbAdapter {
         args.put(KEY_IMAGE, image);
 
         return mDb.update(DATABASE_TABLE, args, KEY_ROWID + "=" + rowId, null) > 0;
+    }
+
+    /**
+     * Check to see if a note exists or not
+     * If exists -> return true
+     * otherwise return false
+     * @param rowId ID of the note
+     * @return
+     */
+    public boolean findNote(long rowId) {
+        Cursor mCursor = mDb.query(true, DATABASE_TABLE, new String[] {KEY_ROWID, KEY_TITLE, KEY_BODY, KEY_DATE, KEY_IMAGE},
+                KEY_ROWID + "=" + rowId, null, null, null, null, null);
+
+        if (mCursor == null)
+            return false;
+        else
+            return true;
     }
 }

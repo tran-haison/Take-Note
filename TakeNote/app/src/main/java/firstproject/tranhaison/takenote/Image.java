@@ -2,11 +2,7 @@ package firstproject.tranhaison.takenote;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.widget.ImageView;
-
-import androidx.annotation.NonNull;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -100,19 +96,4 @@ public class Image {
         return image;
     }
 
-    /**
-     * Check to see if an ImageView contain an image or not
-     * @param view
-     * @return
-     */
-    public boolean hasImage(@NonNull ImageView view) {
-        Drawable drawable = view.getDrawable();
-        boolean hasImage = (drawable != null);
-
-        if (hasImage && (drawable instanceof BitmapDrawable)) {
-            hasImage = ((BitmapDrawable)drawable).getBitmap() != null;
-        }
-
-        return hasImage;
-    }
 }
