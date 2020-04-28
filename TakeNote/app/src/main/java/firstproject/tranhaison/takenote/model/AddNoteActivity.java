@@ -1,12 +1,19 @@
 package firstproject.tranhaison.takenote.model;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,6 +25,9 @@ import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -37,6 +47,10 @@ public class AddNoteActivity extends AppCompatActivity {
     ImageView imageViewPhoto;
     Toolbar toolbarAddNote;
     FloatingActionButton floatingActionButtonAdd;
+
+    byte[] getImage = null;
+    final int REQUEST_CODE_CAMERA = 2;
+    final int REQUEST_CODE_FOLDER = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,10 +85,19 @@ public class AddNoteActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_add_note_photo:
-                // TODO
-                Toast.makeText(this, "photo", Toast.LENGTH_SHORT).show();
+
+            case R.id.menu_add_note_photo_camera:
+                ActivityCompat.requestPermissions(AddNoteActivity.this,
+                        new String[] {Manifest.permission.CAMERA},
+                        REQUEST_CODE_CAMERA);
                 break;
+
+            case R.id.menu_add_note_photo_library:
+                ActivityCompat.requestPermissions(AddNoteActivity.this,
+                        new String[] {Manifest.permission.READ_EXTERNAL_STORAGE},
+                        REQUEST_CODE_FOLDER);
+                break;
+
             case R.id.menu_add_note_delete:
                 Note editedNote = getEditedNote();
                 if (editedNote != null) {
@@ -89,8 +112,60 @@ public class AddNoteActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_CODE_CAMERA:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    startActivityForResult(intent, REQUEST_CODE_CAMERA);
+                } else {
+                    Toast.makeText(this, "Camera access denied!", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case REQUEST_CODE_FOLDER:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Intent intent1 = new Intent(Intent.ACTION_PICK);
+                    intent1.setType("image/*");
+                    startActivityForResult(intent1, REQUEST_CODE_FOLDER);
+                } else {
+                    Toast.makeText(this, "Folder access denied!", Toast.LENGTH_SHORT).show();
+                }
+                break;
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+
+        if (requestCode == REQUEST_CODE_CAMERA && resultCode == RESULT_OK && data != null) {
+            Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+            Image imageCamera = new Image();
+            imageCamera.rescaleBitmap(bitmap, imageViewPhoto);
+            getImage = imageCamera.convertFromBitmap(bitmap);
+        }
+
+        if (requestCode == REQUEST_CODE_FOLDER && resultCode == RESULT_OK && data != null) {
+            Uri uri = data.getData();
+            try {
+                InputStream inputStream = getContentResolver().openInputStream(uri);
+                Bitmap bitmap1 = BitmapFactory.decodeStream(inputStream);
+                Image imageFolder = new Image();
+                imageFolder.rescaleBitmap(bitmap1, imageViewPhoto);
+                getImage = imageFolder.getBytes(inputStream);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
     /**
-     * Get the image after taking photo or the image in user's folder
+     * Get the image after taking photo from ViewNoteActivity
      * then display in the ImageView
      */
     private byte[] getCameraImage() {
@@ -109,6 +184,10 @@ public class AddNoteActivity extends AppCompatActivity {
         return cameraImage.getImage();
     }
 
+    /**
+     * Get the image after chosing from ViewNoteActivity
+     * @return
+     */
     private byte[] getFolderImage() {
         Intent intent = getIntent();
         Bundle bundle = intent.getBundleExtra("choose_photo");
@@ -173,6 +252,7 @@ public class AddNoteActivity extends AppCompatActivity {
     /**
      * When user click on arrow back navigation button
      * Same as addNewNote
+     * @param editedNote
      */
     private void updateNote(final Note editedNote) {
         toolbarAddNote.setNavigationOnClickListener(new View.OnClickListener() {
@@ -185,7 +265,6 @@ public class AddNoteActivity extends AppCompatActivity {
 
     /**
      * When user click on DEVICE back button -> return to previous activity
-     *
      * @param keyCode
      * @param event
      * @return
@@ -215,7 +294,14 @@ public class AddNoteActivity extends AppCompatActivity {
         String title = editTextTitle.getText().toString();
         String note = editTextNote.getText().toString();
 
-        // Get the image
+        /**
+         * Get the image from:
+         * 1. Edited note
+         * 2. Camera in ViewNoteActivity
+         * 3. Folder in ViewNoteActivity
+         * 4. Camera or Folder in this Activity
+         * -> Then set to newImage
+         */
         byte[] noteImage = null;
         byte[] imageCamera = getCameraImage();
         byte[] imageFolder = getFolderImage();
@@ -224,16 +310,18 @@ public class AddNoteActivity extends AppCompatActivity {
         if (editedNote != null)
             noteImage = editedNote.getImage();
 
-        if (title.equals("") && note.equals("") && noteImage == null && imageCamera == null && imageFolder == null) {
+        if (title.equals("") && note.equals("") && getImage == null && noteImage == null && imageCamera == null && imageFolder == null) {
             Toast.makeText(AddNoteActivity.this, "Empty note discarded", Toast.LENGTH_SHORT).show();
             activityIntent();
         }
         else {
-            if (noteImage != null && imageCamera == null && imageFolder == null) {
+            if (getImage != null && noteImage == null && imageCamera == null && imageFolder == null) {
+                newImage = getImage;
+            } else if (getImage == null && noteImage != null && imageCamera == null && imageFolder == null) {
                 newImage = noteImage;
-            } else if (noteImage == null && imageCamera != null && imageFolder == null) {
+            } else if (getImage == null && noteImage == null && imageCamera != null && imageFolder == null) {
                 newImage = imageCamera;
-            } else if (noteImage == null && imageCamera == null && imageFolder != null) {
+            } else if (getImage == null && noteImage == null && imageCamera == null && imageFolder != null) {
                 newImage = imageFolder;
             } else {
                 newImage = null;

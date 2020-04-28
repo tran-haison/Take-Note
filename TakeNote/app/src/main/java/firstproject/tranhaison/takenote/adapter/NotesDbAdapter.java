@@ -185,21 +185,4 @@ public class NotesDbAdapter {
 
         return mDb.update(DATABASE_TABLE, args, KEY_ROWID + "=" + rowId, null) > 0;
     }
-
-    /**
-     * Check to see if a note exists or not
-     * If exists -> return true
-     * otherwise return false
-     * @param rowId ID of the note
-     * @return
-     */
-    public boolean findNote(long rowId) {
-        Cursor mCursor = mDb.query(true, DATABASE_TABLE, new String[] {KEY_ROWID, KEY_TITLE, KEY_BODY, KEY_DATE, KEY_IMAGE},
-                KEY_ROWID + "=" + rowId, null, null, null, null, null);
-
-        if (mCursor == null)
-            return false;
-        else
-            return true;
-    }
 }

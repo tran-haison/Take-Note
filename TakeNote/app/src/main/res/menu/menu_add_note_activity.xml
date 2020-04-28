@@ -3,17 +3,24 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/menu_add_note_photo"
-        android:icon="@drawable/ic_photo_24dp"
-        android:title="Photo"
-        android:orderInCategory="100"
-        app:showAsAction="always" />
-
-    <item
         android:id="@+id/menu_add_note_delete"
         android:icon="@drawable/ic_delete_24dp"
         android:title="Delete"
         android:orderInCategory="100"
         app:showAsAction="always" />
+
+    <item
+        android:id="@+id/menu_add_note_photo_camera"
+        android:icon="@drawable/ic_photo_camera_24dp"
+        android:title="Take photo"
+        android:orderInCategory="100"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/menu_add_note_photo_library"
+        android:icon="@drawable/ic_photo_library_24dp"
+        android:title="Choose image"
+        android:orderInCategory="100"
+        app:showAsAction="never" />
 
 </menu>
