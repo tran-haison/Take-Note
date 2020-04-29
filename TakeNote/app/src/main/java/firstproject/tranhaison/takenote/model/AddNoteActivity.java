@@ -153,10 +153,8 @@ public class AddNoteActivity extends AppCompatActivity {
                 Bitmap bitmap1 = BitmapFactory.decodeStream(inputStream);
                 Image imageFolder = new Image();
                 imageFolder.rescaleBitmap(bitmap1, imageViewPhoto);
-                getImage = imageFolder.getBytes(inputStream);
+                getImage = imageFolder.convertFromBitmap(bitmap1);
             } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
@@ -329,7 +327,6 @@ public class AddNoteActivity extends AppCompatActivity {
 
             if (editedNote != null) {
                 myDB.updateNote(editedNote.getId(), title, note, currentDate, newImage);
-
                 Intent intent = new Intent();
                 intent.putExtra("isEdited", RESULT_OK);
                 setResult(RESULT_OK, intent);

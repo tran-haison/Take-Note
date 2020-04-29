@@ -2,6 +2,7 @@ package firstproject.tranhaison.takenote;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Handler;
 import android.widget.ImageView;
 
 import java.io.ByteArrayInputStream;
@@ -58,23 +59,31 @@ public class Image {
      * @param bitmap the bitmap of the image
      * @param imageView the view want to set new bitmap
      */
-    public void rescaleBitmap(Bitmap bitmap, ImageView imageView) {
-        int currentBitmapWidth = bitmap.getWidth();
-        int currentBitmapHeight = bitmap.getHeight();
-        int ivWidth = imageView.getWidth();
-        int ivHeight = imageView.getMaxHeight();
+    public void rescaleBitmap(final Bitmap bitmap, final ImageView imageView) {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (bitmap != null) {
+                    int currentBitmapWidth = bitmap.getWidth();
+                    int currentBitmapHeight = bitmap.getHeight();
+                    int ivWidth = imageView.getWidth();
+                    int ivHeight = imageView.getMaxHeight();
 
-        if ((ivWidth/ivHeight) < (currentBitmapWidth/currentBitmapHeight)) {
-            int newWidth = ivWidth;
-            int newHeight = (int) Math.floor((double)currentBitmapHeight * ((double)newWidth / (double)currentBitmapWidth));
-            Bitmap newBitmap = Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true);
-            imageView.setImageBitmap(newBitmap);
-        } else {
-            int newHeight = ivHeight;
-            int newWidth = (int) Math.floor((double)currentBitmapWidth * ((double)newHeight / (double)currentBitmapHeight));
-            Bitmap newBitmap = Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true);
-            imageView.setImageBitmap(newBitmap);
-        }
+                    if ((ivWidth/ivHeight) < (currentBitmapWidth/currentBitmapHeight)) {
+                        int newWidth = ivWidth;
+                        int newHeight = (int) Math.floor((double)currentBitmapHeight * ((double)newWidth / (double)currentBitmapWidth));
+                        Bitmap newBitmap = Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true);
+                        imageView.setImageBitmap(newBitmap);
+                    } else {
+                        int newHeight = ivHeight;
+                        int newWidth = (int) Math.floor((double)currentBitmapWidth * ((double)newHeight / (double)currentBitmapHeight));
+                        Bitmap newBitmap = Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true);
+                        imageView.setImageBitmap(newBitmap);
+                    }
+                }
+            }
+        }, 100);
+
     }
 
     /**
