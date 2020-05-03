@@ -1,14 +1,17 @@
 package firstproject.tranhaison.takenote;
 
+import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.widget.ImageView;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.File;
+import java.io.FileInputStream;
 
 public class Image {
 
@@ -16,40 +19,6 @@ public class Image {
 
     public Image() {
         this.image = null;
-    }
-
-    public Image(byte[] image) {
-        this.image = image;
-    }
-
-    public byte[] getImage() {
-        return image;
-    }
-
-    public void setImage(byte[] image) {
-        this.image = image;
-    }
-
-    /**
-     * Convert from byte array to bitmap
-     * @return
-     */
-    public Bitmap convertToBitmap() {
-        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(image);
-        Bitmap bitmapImage = BitmapFactory.decodeStream(byteArrayInputStream);
-        return bitmapImage;
-    }
-
-    /**
-     * Convert from bitmap to byte array
-     * @param bitmap
-     * @return
-     */
-    public byte[] convertFromBitmap(Bitmap bitmap) {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
-        image = byteArrayOutputStream.toByteArray();
-        return image;
     }
 
     /**
@@ -82,27 +51,42 @@ public class Image {
                     }
                 }
             }
-        }, 100);
+        }, 50);
 
     }
 
-    /**
-     * Get byte[] from Input Stream
-     * @param inputStream
-     * @return byte[] of image
-     * @throws IOException
-     */
-    public byte[] getBytes(InputStream inputStream) throws IOException {
-        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
-        int bufferSize = 1024;
-        byte[] buffer = new byte[bufferSize];
+    public Uri getImageUri(Context inContext, Bitmap inImage) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
+        return Uri.parse(path);
+    }
 
-        int len;
-        while ((len = inputStream.read(buffer)) != -1) {
-            byteBuffer.write(buffer, 0, len);
+    public Bitmap getBitmap(String path) {
+        Bitmap bitmap=null;
+        try {
+            File f= new File(path);
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+            bitmap = BitmapFactory.decodeStream(new FileInputStream(f), null, options);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        image = byteBuffer.toByteArray();
-        return image;
+        return bitmap ;
+    }
+
+    public String getRealPathFromURI(Uri uri, Context context) {
+        String path = "";
+        if (context.getContentResolver() != null) {
+            Cursor cursor = context.getContentResolver().query(uri, null, null, null, null);
+            if (cursor != null) {
+                cursor.moveToFirst();
+                int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+                path = cursor.getString(idx);
+                cursor.close();
+            }
+        }
+        return path;
     }
 
 }

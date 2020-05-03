@@ -111,10 +111,10 @@ public class NoteAdapter extends BaseAdapter {
         viewHolder.textViewTitle.setText(note.getTitle());
         viewHolder.textViewNote.setText(note.getNote());
 
-        if (note.getImage() != null) {
-            Image imageNote = new Image(note.getImage());
-            Bitmap bitmapImage = imageNote.convertToBitmap();
-            imageNote.rescaleBitmap(bitmapImage, viewHolder.imageViewPhotoNote);
+        if (!note.getImage().isEmpty()) {
+            Image imageNote = new Image();
+            Bitmap bitmap = imageNote.getBitmap(note.getImage());
+            imageNote.rescaleBitmap(bitmap, viewHolder.imageViewPhotoNote);
         }
 
         return convertView;

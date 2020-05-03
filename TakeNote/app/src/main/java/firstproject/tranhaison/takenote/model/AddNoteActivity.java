@@ -10,7 +10,6 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -25,9 +24,6 @@ import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -48,7 +44,7 @@ public class AddNoteActivity extends AppCompatActivity {
     Toolbar toolbarAddNote;
     FloatingActionButton floatingActionButtonAdd;
 
-    byte[] getImage = null;
+    String getImage = "";
     final int REQUEST_CODE_CAMERA = 2;
     final int REQUEST_CODE_FOLDER = 3;
 
@@ -88,7 +84,7 @@ public class AddNoteActivity extends AppCompatActivity {
 
             case R.id.menu_add_note_photo_camera:
                 ActivityCompat.requestPermissions(AddNoteActivity.this,
-                        new String[] {Manifest.permission.CAMERA},
+                        new String[] {Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE},
                         REQUEST_CODE_CAMERA);
                 break;
 
@@ -116,7 +112,7 @@ public class AddNoteActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             case REQUEST_CODE_CAMERA:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                     startActivityForResult(intent, REQUEST_CODE_CAMERA);
                 } else {
@@ -142,21 +138,17 @@ public class AddNoteActivity extends AppCompatActivity {
         if (requestCode == REQUEST_CODE_CAMERA && resultCode == RESULT_OK && data != null) {
             Bitmap bitmap = (Bitmap) data.getExtras().get("data");
             Image imageCamera = new Image();
+            Uri tempUri = imageCamera.getImageUri(AddNoteActivity.this, bitmap);
+            getImage = imageCamera.getRealPathFromURI(tempUri, AddNoteActivity.this);
             imageCamera.rescaleBitmap(bitmap, imageViewPhoto);
-            getImage = imageCamera.convertFromBitmap(bitmap);
         }
 
         if (requestCode == REQUEST_CODE_FOLDER && resultCode == RESULT_OK && data != null) {
             Uri uri = data.getData();
-            try {
-                InputStream inputStream = getContentResolver().openInputStream(uri);
-                Bitmap bitmap1 = BitmapFactory.decodeStream(inputStream);
-                Image imageFolder = new Image();
-                imageFolder.rescaleBitmap(bitmap1, imageViewPhoto);
-                getImage = imageFolder.convertFromBitmap(bitmap1);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
+            Image imageFolder = new Image();
+            getImage = imageFolder.getRealPathFromURI(uri, AddNoteActivity.this);
+            Bitmap bitmapFolder = imageFolder.getBitmap(getImage);
+            imageFolder.rescaleBitmap(bitmapFolder, imageViewPhoto);
         }
 
         super.onActivityResult(requestCode, resultCode, data);
@@ -166,40 +158,42 @@ public class AddNoteActivity extends AppCompatActivity {
      * Get the image after taking photo from ViewNoteActivity
      * then display in the ImageView
      */
-    private byte[] getCameraImage() {
+    private String getCameraImage() {
         Intent intent = getIntent();
         Bundle bundle = intent.getBundleExtra("take_photo");
 
+        String getCamera = "";
         Image cameraImage = new Image();
 
         if (bundle != null) {
-            cameraImage.setImage(bundle.getByteArray("imageCamera"));
-            Bitmap bitmap = cameraImage.convertToBitmap();
+            getCamera = bundle.getString("imageCamera");
+            Bitmap bitmap = cameraImage.getBitmap(getCamera);
             if (bitmap != null) {
                 cameraImage.rescaleBitmap(bitmap, imageViewPhoto);
             }
         }
-        return cameraImage.getImage();
+        return getCamera;
     }
 
     /**
      * Get the image after chosing from ViewNoteActivity
      * @return
      */
-    private byte[] getFolderImage() {
+    private String getFolderImage() {
         Intent intent = getIntent();
         Bundle bundle = intent.getBundleExtra("choose_photo");
 
+        String getFolder = "";
         Image folderImage = new Image();
 
         if (bundle != null) {
-            folderImage.setImage(bundle.getByteArray("imageFolder"));
-            Bitmap bitmap = folderImage.convertToBitmap();
+            getFolder = bundle.getString("imageFolder");
+            Bitmap bitmap = folderImage.getBitmap(getFolder);
             if (bitmap != null) {
                 folderImage.rescaleBitmap(bitmap, imageViewPhoto);
             }
         }
-        return folderImage.getImage();
+        return getFolder;
     }
 
     /**
@@ -221,10 +215,10 @@ public class AddNoteActivity extends AppCompatActivity {
             editTextNote.setText(editedNote.getNote());
             textViewDate.setText(editedNote.getDate());
 
-            if (editedNote.getImage() != null) {
-                Image imageNote = new Image(editedNote.getImage());
-                Bitmap bitmapImage = imageNote.convertToBitmap();
-                imageNote.rescaleBitmap(bitmapImage, imageViewPhoto);
+            if (!editedNote.getImage().isEmpty()) {
+                Image imageNote = new Image();
+                Bitmap bitmap = imageNote.getBitmap(editedNote.getImage());
+                imageNote.rescaleBitmap(bitmap, imageViewPhoto);
             }
         }
 
@@ -300,29 +294,31 @@ public class AddNoteActivity extends AppCompatActivity {
          * 4. Camera or Folder in this Activity
          * -> Then set to newImage
          */
-        byte[] noteImage = null;
-        byte[] imageCamera = getCameraImage();
-        byte[] imageFolder = getFolderImage();
-        byte[] newImage;
+        String noteImage = " ";
+        String imageCamera = getCameraImage();
+        String imageFolder = getFolderImage();
+        String newImage;
 
         if (editedNote != null)
             noteImage = editedNote.getImage();
 
-        if (title.equals("") && note.equals("") && getImage == null && noteImage == null && imageCamera == null && imageFolder == null) {
+        if (title.isEmpty() && note.isEmpty() && getImage.isEmpty() && noteImage.isEmpty() && imageCamera.isEmpty() && imageFolder.isEmpty()) {
             Toast.makeText(AddNoteActivity.this, "Empty note discarded", Toast.LENGTH_SHORT).show();
             activityIntent();
         }
         else {
-            if (getImage != null && noteImage == null && imageCamera == null && imageFolder == null) {
+            if (!getImage.isEmpty() && noteImage.isEmpty() && imageCamera.isEmpty() && imageFolder.isEmpty()) {
                 newImage = getImage;
-            } else if (getImage == null && noteImage != null && imageCamera == null && imageFolder == null) {
+            } else if (getImage.isEmpty() && !noteImage.isEmpty() && imageCamera.isEmpty() && imageFolder.isEmpty()) {
                 newImage = noteImage;
-            } else if (getImage == null && noteImage == null && imageCamera != null && imageFolder == null) {
+            } else if (getImage.isEmpty() && noteImage.isEmpty() && !imageCamera.isEmpty() && imageFolder.isEmpty()) {
                 newImage = imageCamera;
-            } else if (getImage == null && noteImage == null && imageCamera == null && imageFolder != null) {
+            } else if (getImage.isEmpty() && noteImage.isEmpty() && imageCamera.isEmpty() && !imageFolder.isEmpty()) {
                 newImage = imageFolder;
+            } else if (!getImage.isEmpty() && !noteImage.isEmpty() && imageCamera.isEmpty() && imageFolder.isEmpty()) {
+                newImage = getImage;
             } else {
-                newImage = null;
+                newImage = "";
             }
 
             if (editedNote != null) {

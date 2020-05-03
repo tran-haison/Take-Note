@@ -27,9 +27,6 @@ import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -135,7 +132,7 @@ public class ViewNoteActivity extends AppCompatActivity {
                         // Request permission from user to let app open camera
                         ActivityCompat.requestPermissions(
                                 ViewNoteActivity.this,
-                                new String[] {Manifest.permission.CAMERA},
+                                new String[] {Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE},
                                 REQUEST_CODE_CAMERA);
                         break;
                     case R.id.menu_context_photo_library:
@@ -164,7 +161,7 @@ public class ViewNoteActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             case REQUEST_CODE_CAMERA:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                     startActivityForResult(intent, REQUEST_CODE_CAMERA);
                 } else {
@@ -209,13 +206,13 @@ public class ViewNoteActivity extends AppCompatActivity {
         }
 
         if (requestCode == REQUEST_CODE_CAMERA && resultCode == RESULT_OK && data != null) {
-            // Get a photo as bitmap object after user click check button
             Bitmap bitmap = (Bitmap) data.getExtras().get("data");
             Image image = new Image();
-            byte[] imageToByte = image.convertFromBitmap(bitmap);
+            Uri tempUri = image.getImageUri(ViewNoteActivity.this, bitmap);
+            String path = image.getRealPathFromURI(tempUri, ViewNoteActivity.this);
 
             Bundle bundle = new Bundle();
-            bundle.putByteArray("imageCamera", imageToByte);
+            bundle.putString("imageCamera", path);
             Intent intent = new Intent(ViewNoteActivity.this, AddNoteActivity.class);
             intent.putExtra("take_photo", bundle);
             startActivity(intent);
@@ -224,22 +221,15 @@ public class ViewNoteActivity extends AppCompatActivity {
 
         if (requestCode == REQUEST_CODE_FOLDER && resultCode == RESULT_OK && data != null) {
             Uri uri = data.getData();
-            try {
-                InputStream inputStream = getContentResolver().openInputStream(uri);
-                Image image = new Image();
-                byte[] imageToByte = image.getBytes(inputStream);
+            Image image = new Image();
+            String path = image.getRealPathFromURI(uri, ViewNoteActivity.this);
 
-                Bundle bundle = new Bundle();
-                bundle.putByteArray("imageFolder", imageToByte);
-                Intent intent = new Intent(ViewNoteActivity.this, AddNoteActivity.class);
-                intent.putExtra("choose_photo", bundle);
-                startActivity(intent);
-                overridePendingTransition(R.anim.anim_enter_from_left, R.anim.anim_exit_to_right);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            Bundle bundle = new Bundle();
+            bundle.putString("imageFolder", path);
+            Intent intent = new Intent(ViewNoteActivity.this, AddNoteActivity.class);
+            intent.putExtra("choose_photo", bundle);
+            startActivity(intent);
+            overridePendingTransition(R.anim.anim_enter_from_left, R.anim.anim_exit_to_right);
         }
 
         super.onActivityResult(requestCode, resultCode, data);

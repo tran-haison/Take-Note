@@ -35,7 +35,7 @@ public class NotesDbAdapter {
      */
     private static final String DATABASE_CREATE =
             "create table notes (_id INTEGER PRIMARY KEY AUTOINCREMENT, "
-                    + "title TEXT NOT NULL, body TEXT NOT NULL, date VARCHAR(30) NOT NULL, image BLOB DEFAULT NULL);";
+                    + "title TEXT NOT NULL, body TEXT NOT NULL, date VARCHAR(30) NOT NULL, image TEXT NOT NULL);";
 
     private static final String DATABASE_NAME = "data";
     private static final String DATABASE_TABLE = "notes";
@@ -99,7 +99,7 @@ public class NotesDbAdapter {
      * @param image the image of the note (if exists)
      * @return rowId or -1 if failed
      */
-    public long createNote(String title, String body, String date, byte[] image) {
+    public long createNote(String title, String body, String date, String image) {
         ContentValues initialValues = new ContentValues();
         initialValues.put(KEY_TITLE, title);
         initialValues.put(KEY_BODY, body);
@@ -134,7 +134,7 @@ public class NotesDbAdapter {
                 note.setTitle(cursor.getString(1));
                 note.setNote(cursor.getString(2));
                 note.setDate(cursor.getString(3));
-                note.setImage(cursor.getBlob(4));
+                note.setImage(cursor.getString(4));
                 noteArrayList.add(note);
             } while (cursor.moveToNext());
         }
@@ -161,7 +161,7 @@ public class NotesDbAdapter {
         note.setTitle(mCursor.getString(1));
         note.setNote(mCursor.getString(2));
         note.setDate(mCursor.getString(3));
-        note.setImage(mCursor.getBlob(4));
+        note.setImage(mCursor.getString(4));
         return note;
     }
 
@@ -176,13 +176,12 @@ public class NotesDbAdapter {
      * @param date value to set note date to
      * @return true if the note was successfully updated, false otherwise
      */
-    public boolean updateNote(long rowId, String title, String body, String date, byte[] image) {
+    public boolean updateNote(long rowId, String title, String body, String date, String image) {
         ContentValues args = new ContentValues();
         args.put(KEY_TITLE, title);
         args.put(KEY_BODY, body);
         args.put(KEY_DATE, date);
         args.put(KEY_IMAGE, image);
-
         return mDb.update(DATABASE_TABLE, args, KEY_ROWID + "=" + rowId, null) > 0;
     }
 }

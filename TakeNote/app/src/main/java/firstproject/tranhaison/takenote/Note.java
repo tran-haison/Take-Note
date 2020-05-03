@@ -8,14 +8,14 @@ import java.io.Serializable;
  * 2. Title of the note
  * 3. Note
  * 4. Date of the note (automatically added)
- * 5. The image of the note
+ * 5. The path of image of the note
  */
 public class Note implements Serializable {
     private long id;
     private String title;
     private String note;
     private String date;
-    private byte[] image;
+    private String image;
 
     public Note() {
     }
@@ -52,11 +52,11 @@ public class Note implements Serializable {
         this.date = date;
     }
 
-    public byte[] getImage() {
+    public String getImage() {
         return image;
     }
 
-    public void setImage(byte[] image) {
+    public void setImage(String image) {
         this.image = image;
     }
 }
