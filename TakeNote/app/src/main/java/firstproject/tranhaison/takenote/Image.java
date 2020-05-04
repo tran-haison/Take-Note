@@ -52,7 +52,6 @@ public class Image {
                 }
             }
         }, 50);
-
     }
 
     public Uri getImageUri(Context inContext, Bitmap inImage) {

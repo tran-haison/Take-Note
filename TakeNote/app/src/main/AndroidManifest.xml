@@ -13,22 +13,20 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
+        <activity android:name=".model.ImageCustomView"
+            android:label="@string/empty"></activity>
         <activity
             android:name=".model.ViewNoteActivity"
             android:label="@string/empty">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
-
         <activity
             android:name=".model.AddNoteActivity"
-            android:label="@string/empty"/>
-
+            android:label="@string/empty" />
     </application>
 
 </manifest>

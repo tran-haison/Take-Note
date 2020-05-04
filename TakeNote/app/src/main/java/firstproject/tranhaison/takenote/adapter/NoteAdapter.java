@@ -115,6 +115,8 @@ public class NoteAdapter extends BaseAdapter {
             Image imageNote = new Image();
             Bitmap bitmap = imageNote.getBitmap(note.getImage());
             imageNote.rescaleBitmap(bitmap, viewHolder.imageViewPhotoNote);
+        } else {
+            viewHolder.imageViewPhotoNote.setImageResource(R.drawable.ic_photo_white_1dp);
         }
 
         return convertView;

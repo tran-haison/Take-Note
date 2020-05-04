@@ -44,9 +44,11 @@ public class AddNoteActivity extends AppCompatActivity {
     Toolbar toolbarAddNote;
     FloatingActionButton floatingActionButtonAdd;
 
-    String getImage = "";
     final int REQUEST_CODE_CAMERA = 2;
     final int REQUEST_CODE_FOLDER = 3;
+    final int REQUEST_CODE_GRAB_TEXT = 4;
+    // Current image in ImageView
+    String currentImage = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +72,7 @@ public class AddNoteActivity extends AppCompatActivity {
         Note editedNote = getEditedNote();
         updateNote(editedNote);
         addNewNote(editedNote);
+        grabImageText();
     }
 
     @Override
@@ -134,21 +137,27 @@ public class AddNoteActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-
         if (requestCode == REQUEST_CODE_CAMERA && resultCode == RESULT_OK && data != null) {
             Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+
             Image imageCamera = new Image();
             Uri tempUri = imageCamera.getImageUri(AddNoteActivity.this, bitmap);
-            getImage = imageCamera.getRealPathFromURI(tempUri, AddNoteActivity.this);
+            currentImage = imageCamera.getRealPathFromURI(tempUri, AddNoteActivity.this);
             imageCamera.rescaleBitmap(bitmap, imageViewPhoto);
         }
 
         if (requestCode == REQUEST_CODE_FOLDER && resultCode == RESULT_OK && data != null) {
             Uri uri = data.getData();
+
             Image imageFolder = new Image();
-            getImage = imageFolder.getRealPathFromURI(uri, AddNoteActivity.this);
-            Bitmap bitmapFolder = imageFolder.getBitmap(getImage);
+            currentImage = imageFolder.getRealPathFromURI(uri, AddNoteActivity.this);
+            Bitmap bitmapFolder = imageFolder.getBitmap(currentImage);
             imageFolder.rescaleBitmap(bitmapFolder, imageViewPhoto);
+        }
+
+        if (requestCode == REQUEST_CODE_GRAB_TEXT && resultCode == RESULT_OK && data != null) {
+            currentImage = "";
+            imageViewPhoto.setImageResource(R.drawable.ic_photo_white_1dp);
         }
 
         super.onActivityResult(requestCode, resultCode, data);
@@ -170,6 +179,7 @@ public class AddNoteActivity extends AppCompatActivity {
             Bitmap bitmap = cameraImage.getBitmap(getCamera);
             if (bitmap != null) {
                 cameraImage.rescaleBitmap(bitmap, imageViewPhoto);
+                currentImage = getCamera;
             }
         }
         return getCamera;
@@ -191,6 +201,7 @@ public class AddNoteActivity extends AppCompatActivity {
             Bitmap bitmap = folderImage.getBitmap(getFolder);
             if (bitmap != null) {
                 folderImage.rescaleBitmap(bitmap, imageViewPhoto);
+                currentImage = getFolder;
             }
         }
         return getFolder;
@@ -219,6 +230,7 @@ public class AddNoteActivity extends AppCompatActivity {
                 Image imageNote = new Image();
                 Bitmap bitmap = imageNote.getBitmap(editedNote.getImage());
                 imageNote.rescaleBitmap(bitmap, imageViewPhoto);
+                currentImage = editedNote.getImage();
             }
         }
 
@@ -256,6 +268,23 @@ public class AddNoteActivity extends AppCompatActivity {
     }
 
     /**
+     * If user clicks on an image, send it to ImageCustomViewActivity
+     */
+    private void grabImageText() {
+        if (!currentImage.isEmpty()) {
+            imageViewPhoto.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(AddNoteActivity.this, ImageCustomView.class);
+                    intent.putExtra("imageCustom", currentImage);
+                    startActivityForResult(intent, REQUEST_CODE_GRAB_TEXT);
+                    overridePendingTransition(R.anim.anim_enter_from_left, R.anim.anim_exit_to_right);
+                }
+            });
+        }
+    }
+
+    /**
      * When user click on DEVICE back button -> return to previous activity
      * @param keyCode
      * @param event
@@ -286,50 +315,20 @@ public class AddNoteActivity extends AppCompatActivity {
         String title = editTextTitle.getText().toString();
         String note = editTextNote.getText().toString();
 
-        /**
-         * Get the image from:
-         * 1. Edited note
-         * 2. Camera in ViewNoteActivity
-         * 3. Folder in ViewNoteActivity
-         * 4. Camera or Folder in this Activity
-         * -> Then set to newImage
-         */
-        String noteImage = " ";
-        String imageCamera = getCameraImage();
-        String imageFolder = getFolderImage();
-        String newImage;
-
-        if (editedNote != null)
-            noteImage = editedNote.getImage();
-
-        if (title.isEmpty() && note.isEmpty() && getImage.isEmpty() && noteImage.isEmpty() && imageCamera.isEmpty() && imageFolder.isEmpty()) {
+        if (title.isEmpty() && note.isEmpty() && currentImage.isEmpty()) {
             Toast.makeText(AddNoteActivity.this, "Empty note discarded", Toast.LENGTH_SHORT).show();
             activityIntent();
         }
         else {
-            if (!getImage.isEmpty() && noteImage.isEmpty() && imageCamera.isEmpty() && imageFolder.isEmpty()) {
-                newImage = getImage;
-            } else if (getImage.isEmpty() && !noteImage.isEmpty() && imageCamera.isEmpty() && imageFolder.isEmpty()) {
-                newImage = noteImage;
-            } else if (getImage.isEmpty() && noteImage.isEmpty() && !imageCamera.isEmpty() && imageFolder.isEmpty()) {
-                newImage = imageCamera;
-            } else if (getImage.isEmpty() && noteImage.isEmpty() && imageCamera.isEmpty() && !imageFolder.isEmpty()) {
-                newImage = imageFolder;
-            } else if (!getImage.isEmpty() && !noteImage.isEmpty() && imageCamera.isEmpty() && imageFolder.isEmpty()) {
-                newImage = getImage;
-            } else {
-                newImage = "";
-            }
-
             if (editedNote != null) {
-                myDB.updateNote(editedNote.getId(), title, note, currentDate, newImage);
+                myDB.updateNote(editedNote.getId(), title, note, currentDate, currentImage);
                 Intent intent = new Intent();
                 intent.putExtra("isEdited", RESULT_OK);
                 setResult(RESULT_OK, intent);
                 finish();
                 overridePendingTransition(R.anim.anim_enter_from_right, R.anim.anim_exit_to_left);
             } else {
-                myDB.createNote(title, note, currentDate, newImage);
+                myDB.createNote(title, note, currentDate, currentImage);
                 activityIntent();
             }
         }

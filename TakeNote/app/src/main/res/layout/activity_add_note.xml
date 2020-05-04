@@ -96,8 +96,6 @@
         android:id="@+id/imageViewPhoto"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:layout_marginEnd="4dp"
         android:contentDescription="@string/todo"
         android:maxHeight="250dp"
         android:src="@drawable/ic_photo_white_1dp"
