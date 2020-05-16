@@ -6,7 +6,7 @@
     <string name="view_note">View note</string>
     <string name="note">Note</string>
     <string name="your_note">YOUR NOTE</string>
-    <string name="todo">TODO</string>
     <string name="demo">Demo</string>
     <string name="empty"></string>
+    <string name="todo">TODO</string>
 </resources>

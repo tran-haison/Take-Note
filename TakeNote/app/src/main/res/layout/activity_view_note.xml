@@ -6,30 +6,18 @@
     android:layout_height="match_parent"
     tools:context=".model.ViewNoteActivity">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:minHeight="?attr/actionBarSize"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:navigationIcon="@drawable/ic_menu_24dp"
-        app:title="@string/empty" />
-
     <ListView
         android:id="@+id/listViewNote"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="4dp"
-        android:layout_marginTop="4dp"
         android:layout_marginEnd="4dp"
         android:layout_marginBottom="4dp"
         android:background="@drawable/background_default"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolBar" />
+        app:layout_constraintTop_toBottomOf="@+id/relativeLayoutActionBar" />
 
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -45,5 +33,45 @@
         app:fabSize="normal"
         app:elevation="6dp"
         app:borderWidth="0dp"/>
+
+    <RelativeLayout
+        android:id="@+id/relativeLayoutActionBar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:minHeight="?attr/actionBarSize"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageButton
+            android:id="@+id/imageButtonMenu"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@null"
+            android:contentDescription="@string/todo"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_menu_24dp" />
+
+        <ImageButton
+            android:id="@+id/imageButtonPhoto"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_photo_24dp"
+            android:background="@null"
+            android:contentDescription="@string/todo"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"/>
+
+        <ImageButton
+            android:id="@+id/imageButtonSearch"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_search_24dp"
+            android:background="@null"
+            android:contentDescription="@string/todo"
+            android:layout_centerVertical="true"
+            android:layout_toStartOf="@id/imageButtonPhoto"/>
+
+    </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

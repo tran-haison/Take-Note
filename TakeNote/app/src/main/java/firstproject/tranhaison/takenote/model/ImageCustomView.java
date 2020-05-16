@@ -11,8 +11,10 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -20,6 +22,8 @@ public class ImageCustomView extends AppCompatActivity {
 
     Toolbar toolbarImageCustom;
     ImageView imageViewImageCustom;
+
+    final int RESULT_DELETE = 5;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +35,7 @@ public class ImageCustomView extends AppCompatActivity {
         setSupportActionBar(toolbarImageCustom);
 
         getImageCustom();
+        returnPreviousActivity();
     }
 
     @Override
@@ -46,13 +51,27 @@ public class ImageCustomView extends AppCompatActivity {
                 Toast.makeText(this, "Grab text", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.menu_image_custom_delete:
-                Intent intent = new Intent();
-                setResult(RESULT_OK, intent);
-                finish();
-                overridePendingTransition(R.anim.anim_enter_from_right, R.anim.anim_exit_to_left);
+                intentFinish(RESULT_DELETE);
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            intentFinish(RESULT_OK);
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    private void returnPreviousActivity() {
+        toolbarImageCustom.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                intentFinish(RESULT_OK);
+            }
+        });
     }
 
     private void getImageCustom() {
@@ -65,6 +84,13 @@ public class ImageCustomView extends AppCompatActivity {
         if (bitmap != null) {
             rescaleBitmap(bitmap, imageViewImageCustom);
         }
+    }
+
+    private void intentFinish(int result_code) {
+        Intent intent = new Intent();
+        setResult(result_code, intent);
+        finish();
+        overridePendingTransition(R.anim.anim_enter_from_right, R.anim.anim_exit_to_left);
     }
 
     public void rescaleBitmap(final Bitmap bitmap, final ImageView imageView) {

@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
@@ -45,17 +44,20 @@ import firstproject.tranhaison.takenote.R;
 public class ViewNoteActivity extends AppCompatActivity {
 
     /**
-     * Initialize objects for Database, Views (List View, Button), Array List and Array Adapter
-     * also for custom ToolBar as ActionBar and FloatingActionButton
+     * Initialize objects for Database, NoteAdapter, ArrayList of notes
+     * and View  as FAB, ImageButton, ListView
      */
     NotesDbAdapter myDB;
-    ListView listViewNote;
-    ArrayList<Note> noteArrayList;
-    Toolbar toolbar;
-    FloatingActionButton floatingActionButtonAdd;
     NoteAdapter noteAdapter;
-    ImageButton imageButtonPhoto;
+    ArrayList<Note> noteArrayList;
 
+    ListView listViewNote;
+    FloatingActionButton floatingActionButtonAdd;
+    ImageButton imageButtonPhoto, imageButtonMenu, imageButtonSearch;
+
+    /**
+     * Code to define the action
+     */
     final int REQUEST_CODE_EDIT = 1;
     final int REQUEST_CODE_CAMERA = 2;
     final int REQUEST_CODE_FOLDER = 3;
@@ -67,22 +69,23 @@ public class ViewNoteActivity extends AppCompatActivity {
 
         /**
          * Create new database and access it as getWritable
-          */
+         */
         myDB = new NotesDbAdapter(this);
         myDB.open();
 
         /**
          * Mapping Views
          */
+        imageButtonMenu = (ImageButton) findViewById(R.id.imageButtonMenu);
+        imageButtonPhoto = (ImageButton) findViewById(R.id.imageButtonPhoto);
+        imageButtonSearch = (ImageButton) findViewById(R.id.imageButtonSearch);
         listViewNote = (ListView) findViewById(R.id.listViewNote);
         floatingActionButtonAdd = (FloatingActionButton) findViewById(R.id.floatingActionButtonAdd);
-        toolbar = (Toolbar) findViewById(R.id.toolBar);
-        setSupportActionBar(toolbar);
-        noteArrayList = new ArrayList<>();
 
         /**
          * noteAdapter is used to connect between notes (which are stored in noteArrayList) and ListView
          */
+        noteArrayList = new ArrayList<>();
         noteAdapter = new NoteAdapter(myDB,ViewNoteActivity.this, R.layout.note_layout, noteArrayList);
         listViewNote.setAdapter(noteAdapter);
         listViewNote.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
@@ -91,6 +94,8 @@ public class ViewNoteActivity extends AppCompatActivity {
         addNewNote();
         editNote();
         deleteMultiNotes();
+
+        buttonPhotoClick();
     }
 
     /**
@@ -148,6 +153,19 @@ public class ViewNoteActivity extends AppCompatActivity {
         });
         setForceShowIcon(popupMenu);
         popupMenu.show();
+    }
+
+    /**
+     * When user clicks the photo button
+     * then show the pop up menu
+     */
+    private void buttonPhotoClick() {
+        imageButtonPhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                popupMenuPhoto();
+            }
+        });
     }
 
     /**
@@ -233,35 +251,6 @@ public class ViewNoteActivity extends AppCompatActivity {
         }
 
         super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_view_note_activity, menu);
-
-        imageButtonPhoto = (ImageButton) menu.findItem(R.id.menu_view_note_photo).getActionView();
-        imageButtonPhoto.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                popupMenuPhoto();
-            }
-        });
-
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_view_note_search:
-                // TODO
-                Toast.makeText(this, "search", Toast.LENGTH_SHORT).show();
-                break;
-            case R.id.menu_view_note_photo:
-                // TODO
-                break;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     /**

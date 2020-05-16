@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "950817713883",
+    "firebase_url": "https://text-recognition-ec56d.firebaseio.com",
+    "project_id": "text-recognition-ec56d",
+    "storage_bucket": "text-recognition-ec56d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:950817713883:android:f4333a25b35ee6504366fe",
+        "android_client_info": {
+          "package_name": "firstproject.tranhaison.takenote"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "950817713883-pb93qq0htd6ra24oqa6aedeufqb0s6cg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKoxOESxQspnpbiGtcEIb_El8Yn3b6JXw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "950817713883-pb93qq0htd6ra24oqa6aedeufqb0s6cg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -47,6 +47,7 @@ public class AddNoteActivity extends AppCompatActivity {
     final int REQUEST_CODE_CAMERA = 2;
     final int REQUEST_CODE_FOLDER = 3;
     final int REQUEST_CODE_GRAB_TEXT = 4;
+    final int RESULT_DELETE = 5;
     // Current image in ImageView
     String currentImage = "";
 
@@ -70,7 +71,7 @@ public class AddNoteActivity extends AppCompatActivity {
         getFolderImage();
 
         Note editedNote = getEditedNote();
-        updateNote(editedNote);
+        updateNote();
         addNewNote(editedNote);
         grabImageText();
     }
@@ -155,7 +156,7 @@ public class AddNoteActivity extends AppCompatActivity {
             imageFolder.rescaleBitmap(bitmapFolder, imageViewPhoto);
         }
 
-        if (requestCode == REQUEST_CODE_GRAB_TEXT && resultCode == RESULT_OK && data != null) {
+        if (requestCode == REQUEST_CODE_GRAB_TEXT && resultCode == RESULT_DELETE && data != null) {
             currentImage = "";
             imageViewPhoto.setImageResource(R.drawable.ic_photo_white_1dp);
         }
@@ -233,7 +234,6 @@ public class AddNoteActivity extends AppCompatActivity {
                 currentImage = editedNote.getImage();
             }
         }
-
         return editedNote;
     }
 
@@ -255,14 +255,13 @@ public class AddNoteActivity extends AppCompatActivity {
 
     /**
      * When user click on arrow back navigation button
-     * Same as addNewNote
-     * @param editedNote
+     * Same as back pressed
      */
-    private void updateNote(final Note editedNote) {
+    private void updateNote() {
         toolbarAddNote.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                confirmNote(editedNote);
+                activityIntent();
             }
         });
     }
