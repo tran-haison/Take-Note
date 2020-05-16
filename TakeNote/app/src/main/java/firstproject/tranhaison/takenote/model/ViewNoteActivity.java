@@ -21,7 +21,9 @@ import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -54,6 +56,8 @@ public class ViewNoteActivity extends AppCompatActivity {
     ListView listViewNote;
     FloatingActionButton floatingActionButtonAdd;
     ImageButton imageButtonPhoto, imageButtonMenu, imageButtonSearch;
+    ImageView imageViewNoteAdd;
+    TextView textViewPromptNote;
 
     /**
      * Code to define the action
@@ -81,6 +85,8 @@ public class ViewNoteActivity extends AppCompatActivity {
         imageButtonSearch = (ImageButton) findViewById(R.id.imageButtonSearch);
         listViewNote = (ListView) findViewById(R.id.listViewNote);
         floatingActionButtonAdd = (FloatingActionButton) findViewById(R.id.floatingActionButtonAdd);
+        imageViewNoteAdd = (ImageView) findViewById(R.id.imageViewNoteAdd);
+        textViewPromptNote = (TextView) findViewById(R.id.textViewPromptNote);
 
         /**
          * noteAdapter is used to connect between notes (which are stored in noteArrayList) and ListView
@@ -96,6 +102,18 @@ public class ViewNoteActivity extends AppCompatActivity {
         deleteMultiNotes();
 
         buttonPhotoClick();
+
+        promptEmptyNote();
+    }
+
+    private void promptEmptyNote() {
+        if (noteArrayList.isEmpty()) {
+            imageViewNoteAdd.setVisibility(View.VISIBLE);
+            textViewPromptNote.setVisibility(View.VISIBLE);
+        } else {
+            imageViewNoteAdd.setVisibility(View.INVISIBLE);
+            textViewPromptNote.setVisibility(View.INVISIBLE);
+        }
     }
 
     /**
@@ -336,6 +354,7 @@ public class ViewNoteActivity extends AppCompatActivity {
                             Note selectedNote = (Note) noteAdapter.getItem(selected.keyAt(i));
                             myDB.deleteNote(selectedNote.getId());
                             getNotes();
+                            promptEmptyNote();
                         }
                         // Close CAB
                         mode.finish();

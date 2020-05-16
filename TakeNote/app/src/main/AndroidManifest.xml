@@ -14,10 +14,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".model.ImageCustomView"
-            android:label="@string/empty"></activity>
+            android:label="@string/empty" />
         <activity
-            android:name=".model.ViewNoteActivity"
-            android:label="@string/empty">
+            android:name=".model.ViewNoteActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

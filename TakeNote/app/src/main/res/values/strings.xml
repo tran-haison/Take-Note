@@ -9,4 +9,5 @@
     <string name="demo">Demo</string>
     <string name="empty"></string>
     <string name="todo">TODO</string>
+    <string name="hi_do_you_want_to_add_a_new_note">Hi! Do you want to add a new note?</string>
 </resources>
