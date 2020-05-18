@@ -13,19 +13,27 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <meta-data
+            android:name="com.google.firebase.ml.vision.DEPENDENCIES"
+            android:value="ocr" />
+        <!-- To use multiple models: android:value="ocr,model2,model3" -->
+
         <activity android:name=".model.ImageCustomView"
             android:label="@string/empty" />
+
         <activity
             android:name=".model.ViewNoteActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".model.AddNoteActivity"
             android:label="@string/empty" />
+
     </application>
 
 </manifest>

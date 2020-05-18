@@ -21,8 +21,6 @@
         android:id="@+id/imageViewImageCustom"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="4dp"
-        android:layout_marginBottom="4dp"
         android:contentDescription="@string/todo"
         android:src="@drawable/ic_photo_white_1dp"
         app:layout_constraintBottom_toBottomOf="parent"

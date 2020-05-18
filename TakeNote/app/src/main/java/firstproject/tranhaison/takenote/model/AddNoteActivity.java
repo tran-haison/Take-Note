@@ -48,6 +48,8 @@ public class AddNoteActivity extends AppCompatActivity {
     final int REQUEST_CODE_FOLDER = 3;
     final int REQUEST_CODE_GRAB_TEXT = 4;
     final int RESULT_DELETE = 5;
+    final int RESULT_TEXT_RECOGNITION = 6;
+
     // Current image in ImageView
     String currentImage = "";
 
@@ -140,7 +142,6 @@ public class AddNoteActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == REQUEST_CODE_CAMERA && resultCode == RESULT_OK && data != null) {
             Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-
             Image imageCamera = new Image();
             Uri tempUri = imageCamera.getImageUri(AddNoteActivity.this, bitmap);
             currentImage = imageCamera.getRealPathFromURI(tempUri, AddNoteActivity.this);
@@ -149,16 +150,25 @@ public class AddNoteActivity extends AppCompatActivity {
 
         if (requestCode == REQUEST_CODE_FOLDER && resultCode == RESULT_OK && data != null) {
             Uri uri = data.getData();
-
             Image imageFolder = new Image();
             currentImage = imageFolder.getRealPathFromURI(uri, AddNoteActivity.this);
             Bitmap bitmapFolder = imageFolder.getBitmap(currentImage);
             imageFolder.rescaleBitmap(bitmapFolder, imageViewPhoto);
         }
 
-        if (requestCode == REQUEST_CODE_GRAB_TEXT && resultCode == RESULT_DELETE && data != null) {
-            currentImage = "";
-            imageViewPhoto.setImageResource(R.drawable.ic_photo_white_1dp);
+        if (requestCode == REQUEST_CODE_GRAB_TEXT && data != null) {
+            switch (resultCode) {
+                case RESULT_DELETE:
+                    currentImage = "";
+                    imageViewPhoto.setImageResource(R.drawable.ic_photo_white_1dp);
+                    break;
+                case RESULT_TEXT_RECOGNITION:
+                    Intent intent = getIntent();
+                    String textFromImage = intent.getStringExtra("textRecognition");
+                    editTextNote.append("\n" + textFromImage);
+                    break;
+            }
+
         }
 
         super.onActivityResult(requestCode, resultCode, data);

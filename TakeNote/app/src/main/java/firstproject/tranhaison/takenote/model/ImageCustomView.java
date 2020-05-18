@@ -18,12 +18,24 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.ml.vision.FirebaseVision;
+import com.google.firebase.ml.vision.common.FirebaseVisionImage;
+import com.google.firebase.ml.vision.text.FirebaseVisionText;
+import com.google.firebase.ml.vision.text.FirebaseVisionTextRecognizer;
+
+import java.util.List;
+
 public class ImageCustomView extends AppCompatActivity {
 
     Toolbar toolbarImageCustom;
     ImageView imageViewImageCustom;
 
+    Bitmap selectedImage = null;
+
     final int RESULT_DELETE = 5;
+    final int RESULT_TEXT_RECOGNITION = 6;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +60,7 @@ public class ImageCustomView extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_image_custom_grab_text:
-                Toast.makeText(this, "Grab text", Toast.LENGTH_SHORT).show();
+                runTextRecognition(selectedImage);
                 break;
             case R.id.menu_image_custom_delete:
                 intentFinish(RESULT_DELETE);
@@ -79,10 +91,56 @@ public class ImageCustomView extends AppCompatActivity {
         String imageCustom = intent.getStringExtra("imageCustom");
 
         Image image = new Image();
-        Bitmap bitmap = image.getBitmap(imageCustom);
+        selectedImage = image.getBitmap(imageCustom);
 
-        if (bitmap != null) {
-            rescaleBitmap(bitmap, imageViewImageCustom);
+        if (selectedImage != null) {
+            rescaleBitmap(selectedImage, imageViewImageCustom);
+        }
+    }
+
+    private void runTextRecognition (Bitmap selectedImage) {
+        FirebaseVisionImage image = FirebaseVisionImage.fromBitmap(selectedImage);
+        FirebaseVisionTextRecognizer textRecognizer = FirebaseVision.getInstance().getOnDeviceTextRecognizer();
+
+        textRecognizer.processImage(image)
+                .addOnSuccessListener(new OnSuccessListener<FirebaseVisionText>() {
+                    @Override
+                    public void onSuccess(FirebaseVisionText firebaseVisionText) {
+                        textRecognitionResult(firebaseVisionText);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        e.printStackTrace();
+                    }
+                });
+    }
+
+    private void textRecognitionResult(FirebaseVisionText result) {
+        List<FirebaseVisionText.TextBlock> textBlocks = result.getTextBlocks();
+
+        if (textBlocks.size() == 0) {
+            Toast.makeText(this, "Text not found!", Toast.LENGTH_SHORT).show();
+            intentFinish(RESULT_OK);
+        } else {
+            StringBuilder stringBuilder = new StringBuilder("");
+            for (int i=0; i<textBlocks.size(); i++) {
+                List<FirebaseVisionText.Line> lines = textBlocks.get(i).getLines();
+                for (int j=0; j<lines.size(); j++) {
+                    List<FirebaseVisionText.Element> elements = lines.get(j).getElements();
+                    for (int k=0; k<elements.size(); k++) {
+                        stringBuilder.append(elements.get(k).getText()).append(" ");
+                    }
+                    stringBuilder.append("\n");
+                }
+                stringBuilder.append("\n");
+            }
+            Intent intent = new Intent();
+            intent.putExtra("textRecognition", stringBuilder.toString());
+            setResult(RESULT_TEXT_RECOGNITION, intent);
+            finish();
+            overridePendingTransition(R.anim.anim_enter_from_right, R.anim.anim_exit_to_left);
         }
     }
 

@@ -86,6 +86,7 @@
         android:textColor="#545450"
         android:textSize="15sp"
         android:textStyle="italic"
+        android:fontFamily="@font/balootamma_regular"
         android:paddingStart="7dp"
         android:paddingEnd="7dp"
         app:layout_constraintBottom_toBottomOf="parent"
