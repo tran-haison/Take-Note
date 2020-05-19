@@ -38,6 +38,7 @@
         android:layout_height="wrap_content"
         android:text="@string/hi_do_you_want_to_add_a_new_note"
         android:textSize="20sp"
+        android:fontFamily="@font/balootamma_medium"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

@@ -111,8 +111,8 @@ public class ViewNoteActivity extends AppCompatActivity {
             imageViewNoteAdd.setVisibility(View.VISIBLE);
             textViewPromptNote.setVisibility(View.VISIBLE);
         } else {
-            imageViewNoteAdd.setVisibility(View.INVISIBLE);
-            textViewPromptNote.setVisibility(View.INVISIBLE);
+            imageViewNoteAdd.setVisibility(View.GONE);
+            textViewPromptNote.setVisibility(View.GONE);
         }
     }
 

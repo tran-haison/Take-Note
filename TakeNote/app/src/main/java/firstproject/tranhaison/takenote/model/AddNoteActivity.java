@@ -138,6 +138,15 @@ public class AddNoteActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
+    /**
+     * Get the image from Camera or Folder then set into ImageView
+     * Get the result from ImageActivity
+     * if user delete an image -> return to this activity and set currentImage = ""
+     * if user grab text from image -> display the text in editTextNote, otherwise toast to inform user no text detected
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == REQUEST_CODE_CAMERA && resultCode == RESULT_OK && data != null) {
@@ -163,12 +172,10 @@ public class AddNoteActivity extends AppCompatActivity {
                     imageViewPhoto.setImageResource(R.drawable.ic_photo_white_1dp);
                     break;
                 case RESULT_TEXT_RECOGNITION:
-                    Intent intent = getIntent();
-                    String textFromImage = intent.getStringExtra("textRecognition");
+                    String textFromImage = data.getStringExtra("textDetect");
                     editTextNote.append("\n" + textFromImage);
                     break;
             }
-
         }
 
         super.onActivityResult(requestCode, resultCode, data);
@@ -284,7 +291,7 @@ public class AddNoteActivity extends AppCompatActivity {
             imageViewPhoto.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(AddNoteActivity.this, ImageCustomView.class);
+                    Intent intent = new Intent(AddNoteActivity.this, ImageActivity.class);
                     intent.putExtra("imageCustom", currentImage);
                     startActivityForResult(intent, REQUEST_CODE_GRAB_TEXT);
                     overridePendingTransition(R.anim.anim_enter_from_left, R.anim.anim_exit_to_right);

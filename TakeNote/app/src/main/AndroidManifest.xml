@@ -19,7 +19,7 @@
             android:value="ocr" />
         <!-- To use multiple models: android:value="ocr,model2,model3" -->
 
-        <activity android:name=".model.ImageCustomView"
+        <activity android:name=".model.ImageActivity"
             android:label="@string/empty" />
 
         <activity

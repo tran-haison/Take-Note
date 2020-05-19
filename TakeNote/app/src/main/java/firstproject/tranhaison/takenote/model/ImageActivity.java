@@ -25,9 +25,7 @@ import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import com.google.firebase.ml.vision.text.FirebaseVisionText;
 import com.google.firebase.ml.vision.text.FirebaseVisionTextRecognizer;
 
-import java.util.List;
-
-public class ImageCustomView extends AppCompatActivity {
+public class ImageActivity extends AppCompatActivity {
 
     Toolbar toolbarImageCustom;
     ImageView imageViewImageCustom;
@@ -40,7 +38,7 @@ public class ImageCustomView extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_image_custom_view);
+        setContentView(R.layout.activity_image);
 
         imageViewImageCustom = (ImageView) findViewById(R.id.imageViewImageCustom);
         toolbarImageCustom = (Toolbar) findViewById(R.id.toolBarImageCustomView);
@@ -86,6 +84,9 @@ public class ImageCustomView extends AppCompatActivity {
         });
     }
 
+    /**
+     * Get image from AddNoteActivity then display in ImageView
+     */
     private void getImageCustom() {
         Intent intent = getIntent();
         String imageCustom = intent.getStringExtra("imageCustom");
@@ -98,9 +99,13 @@ public class ImageCustomView extends AppCompatActivity {
         }
     }
 
+    /**
+     * Get the ML text recognition model to detect text from an image
+     * @param selectedImage
+     */
     private void runTextRecognition (Bitmap selectedImage) {
         FirebaseVisionImage image = FirebaseVisionImage.fromBitmap(selectedImage);
-        FirebaseVisionTextRecognizer textRecognizer = FirebaseVision.getInstance().getOnDeviceTextRecognizer();
+        final FirebaseVisionTextRecognizer textRecognizer = FirebaseVision.getInstance().getOnDeviceTextRecognizer();
 
         textRecognizer.processImage(image)
                 .addOnSuccessListener(new OnSuccessListener<FirebaseVisionText>() {
@@ -117,33 +122,28 @@ public class ImageCustomView extends AppCompatActivity {
                 });
     }
 
+    /**
+     * If there is no text in image -> Toast to inform user
+     * otherwise store in String variable to put into intent and return back to AddNoteActivity
+     * @param result
+     */
     private void textRecognitionResult(FirebaseVisionText result) {
-        List<FirebaseVisionText.TextBlock> textBlocks = result.getTextBlocks();
-
-        if (textBlocks.size() == 0) {
-            Toast.makeText(this, "Text not found!", Toast.LENGTH_SHORT).show();
-            intentFinish(RESULT_OK);
-        } else {
-            StringBuilder stringBuilder = new StringBuilder("");
-            for (int i=0; i<textBlocks.size(); i++) {
-                List<FirebaseVisionText.Line> lines = textBlocks.get(i).getLines();
-                for (int j=0; j<lines.size(); j++) {
-                    List<FirebaseVisionText.Element> elements = lines.get(j).getElements();
-                    for (int k=0; k<elements.size(); k++) {
-                        stringBuilder.append(elements.get(k).getText()).append(" ");
-                    }
-                    stringBuilder.append("\n");
-                }
-                stringBuilder.append("\n");
-            }
+        String resultText = result.getText();
+        if (resultText.isEmpty())
+            Toast.makeText(this, "No text detected!", Toast.LENGTH_SHORT).show();
+        else {
             Intent intent = new Intent();
-            intent.putExtra("textRecognition", stringBuilder.toString());
+            intent.putExtra("textDetect", resultText);
             setResult(RESULT_TEXT_RECOGNITION, intent);
             finish();
             overridePendingTransition(R.anim.anim_enter_from_right, R.anim.anim_exit_to_left);
         }
     }
 
+    /**
+     * Finish an activity, return to previous (AddNoteActivity)
+     * @param result_code
+     */
     private void intentFinish(int result_code) {
         Intent intent = new Intent();
         setResult(result_code, intent);
@@ -151,6 +151,11 @@ public class ImageCustomView extends AppCompatActivity {
         overridePendingTransition(R.anim.anim_enter_from_right, R.anim.anim_exit_to_left);
     }
 
+    /**
+     * Rescale the image to fit at least either width or height of the ImageView
+     * @param bitmap
+     * @param imageView
+     */
     public void rescaleBitmap(final Bitmap bitmap, final ImageView imageView) {
         new Handler().postDelayed(new Runnable() {
             @Override
