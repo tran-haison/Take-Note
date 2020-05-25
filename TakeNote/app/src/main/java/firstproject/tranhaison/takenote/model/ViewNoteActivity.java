@@ -110,6 +110,14 @@ public class ViewNoteActivity extends AppCompatActivity {
         if (noteArrayList.isEmpty()) {
             imageViewNoteAdd.setVisibility(View.VISIBLE);
             textViewPromptNote.setVisibility(View.VISIBLE);
+            imageViewNoteAdd.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(ViewNoteActivity.this, AddNoteActivity.class);
+                    startActivity(intent);
+                    overridePendingTransition(R.anim.anim_enter_from_left, R.anim.anim_exit_to_right);
+                }
+            });
         } else {
             imageViewNoteAdd.setVisibility(View.GONE);
             textViewPromptNote.setVisibility(View.GONE);

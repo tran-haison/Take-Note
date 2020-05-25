@@ -2,8 +2,8 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_height="match_parent"
     android:layout_width="match_parent"
-    android:background="?android:attr/activatedBackgroundIndicator"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    android:background="@drawable/background_select"
+    xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <LinearLayout
         android:id="@+id/linearLayoutNote"
@@ -29,10 +29,13 @@
             android:id="@+id/textViewTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="0.4"
             android:fontFamily="@font/balootamma_semibold"
             android:maxHeight="75dp"
-            android:padding="7dp"
+            android:paddingLeft="7dp"
+            android:paddingRight="7dp"
+            android:paddingTop="7dp"
+            android:paddingBottom="3dp"
             android:text="@string/title"
             android:textColor="#000000"
             android:textSize="20sp" />
@@ -41,10 +44,13 @@
             android:id="@+id/textViewNote"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="8.9"
+            android:layout_weight="9.5"
             android:fontFamily="@font/balootamma_regular"
             android:maxHeight="100dp"
-            android:padding="7dp"
+            android:paddingLeft="7dp"
+            android:paddingRight="7dp"
+            android:paddingTop="3dp"
+            android:paddingBottom="7dp"
             android:text="@string/note"
             android:textColor="#000000"
             android:textSize="16sp" />

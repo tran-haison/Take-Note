@@ -13,7 +13,6 @@
         android:layout_marginStart="4dp"
         android:layout_marginEnd="4dp"
         android:layout_marginBottom="4dp"
-        android:background="@drawable/background_default"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -93,7 +92,7 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:src="@drawable/ic_search_24dp"
-            android:background="@null"
+            android:background="?attr/selectableItemBackground"
             android:contentDescription="@string/todo"
             android:layout_centerVertical="true"
             android:layout_toStartOf="@id/imageButtonPhoto"/>
