@@ -28,7 +28,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import firstproject.tranhaison.takenote.Image;
-import firstproject.tranhaison.takenote.Note;
+import firstproject.tranhaison.takenote.helper.Note;
 import firstproject.tranhaison.takenote.adapter.NotesDbAdapter;
 import firstproject.tranhaison.takenote.R;
 

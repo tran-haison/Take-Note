@@ -33,7 +33,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 import firstproject.tranhaison.takenote.Image;
-import firstproject.tranhaison.takenote.Note;
+import firstproject.tranhaison.takenote.helper.Note;
 import firstproject.tranhaison.takenote.adapter.NoteAdapter;
 import firstproject.tranhaison.takenote.adapter.NotesDbAdapter;
 import firstproject.tranhaison.takenote.R;
