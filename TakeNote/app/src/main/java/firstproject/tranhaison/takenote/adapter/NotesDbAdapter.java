@@ -59,14 +59,14 @@ public class NotesDbAdapter {
     private static final String CREATE_TABLE_FOLDERS =
             "CREATE TABLE " + TABLE_FOLDERS + "("
             + KEY_FOLDER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + KEY_FOLDER_NAME + " TEXT NOT NULL" + ")";
+            + KEY_FOLDER_NAME + " TEXT NOT NULL" + ");";
 
     // NOTE_FOLDER table create statement
     private static final String CREATE_TABLE_NOTE_FOLDER =
             "CREATE TABLE " + TABLE_NOTE_FOLDER + "("
             + KEY_NOTE_FOLDER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + KEY_ROWID + " INTEGER NOT NULL, "
-            + KEY_FOLDER_ID + " INTEGER NOT NULL" + ")";
+            + KEY_FOLDER_ID + " INTEGER NOT NULL" + ");";
 
     private static class DatabaseHelper extends SQLiteOpenHelper {
 
@@ -299,7 +299,7 @@ public class NotesDbAdapter {
 
     /**
      * Update the note using the details provided. The note to be updated is
-     * specified using the rowId, and it is altered to use the title, body and date
+     * specified using the rowId, and it is altered to use the title, body, date and image
      * values passed in
      *
      * @param rowId id of note to update
@@ -330,13 +330,15 @@ public class NotesDbAdapter {
     }
 
     /**
-     * Update the
+     * Update the note folder with the note_folder's ID
      * @param note_folder_id
+     * @param note_id
      * @param folder_id
      * @return
      */
-    public boolean updateNoteFolder(long note_folder_id, long folder_id) {
+    public boolean updateNoteFolder(long note_folder_id, long note_id, long folder_id) {
         ContentValues values = new ContentValues();
+        values.put(KEY_ROWID, note_id);
         values.put(KEY_FOLDER_ID, folder_id);
         return mDb.update(TABLE_NOTE_FOLDER, values, KEY_NOTE_FOLDER_ID + "=" + note_folder_id, null) > 0;
     }
