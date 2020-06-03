@@ -4,12 +4,12 @@
 
     <item
         android:id="@+id/menu_context_photo_camera"
-        android:title="Take photo"
-        android:icon="@drawable/ic_photo_camera_24dp" />
+        android:icon="@drawable/ic_photo_camera_24dp"
+        android:title="Take photo" />
 
     <item
         android:id="@+id/menu_context_photo_library"
-        android:title="Choose image"
-        android:icon="@drawable/ic_photo_library_24dp" />
+        android:icon="@drawable/ic_photo_library_24dp"
+        android:title="Choose image" />
 
 </menu>

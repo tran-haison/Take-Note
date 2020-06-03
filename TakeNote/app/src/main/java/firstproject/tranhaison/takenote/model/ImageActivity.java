@@ -50,7 +50,7 @@ public class ImageActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_image_custom_view_activity, menu);
+        getMenuInflater().inflate(R.menu.menu_image_activity, menu);
         return super.onCreateOptionsMenu(menu);
     }
 

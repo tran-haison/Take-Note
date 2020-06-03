@@ -14,9 +14,29 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:id="@+id/navigationView"
-        app:headerLayout="@layout/header_layout"
+        app:headerLayout="@layout/header"
         app:menu="@menu/menu_navigation_drawer"
-        android:layout_gravity="start"/>
+        android:layout_gravity="start">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:fontFamily="@font/balootamma_medium"
+                android:text="@string/save_note_prompt"
+                android:textColor="#545450"
+                android:textSize="18sp" />
+
+        </LinearLayout>
+
+    </com.google.android.material.navigation.NavigationView>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -88,7 +108,7 @@
                 android:id="@+id/imageButtonMenu"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:background="@null"
+                android:background="?attr/selectableItemBackground"
                 android:contentDescription="@string/todo"
                 android:layout_centerVertical="true"
                 android:src="@drawable/ic_menu_24dp" />

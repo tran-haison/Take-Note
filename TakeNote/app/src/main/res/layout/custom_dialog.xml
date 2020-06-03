@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="4dp"
+    android:background="@drawable/background_default">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="3dp"
+        android:text="@string/create_a_new_folder"
+        android:textSize="25sp"
+        android:textColor="#545450"
+        android:fontFamily="@font/balootamma_medium"
+        android:gravity="center"/>
+
+    <EditText
+        android:id="@+id/editTextAddFolder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:background="@drawable/background_default"
+        android:fontFamily="@font/balootamma_regular"
+        android:hint="@string/enter_new_folder"
+        android:inputType="textPersonName"
+        android:padding="10dp"
+        android:textColor="#545450"
+        android:textColorHint="#545450"
+        android:textSize="18sp"
+        android:importantForAutofill="no" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/buttonCancelFolder"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/cancel"
+            android:textSize="20sp"
+            android:textColor="#545450"
+            android:fontFamily="@font/balootamma_bold"
+            android:background="?attr/selectableItemBackground"
+            style="?android:buttonBarButtonStyle" />
+
+        <Button
+            android:id="@+id/buttonAddFolder"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/add"
+            android:textSize="20sp"
+            android:textColor="#AF5A41"
+            android:fontFamily="@font/balootamma_bold"
+            android:background="?attr/selectableItemBackground"
+            style="?android:buttonBarButtonStyle"/>
+
+    </LinearLayout>
+
+</LinearLayout>

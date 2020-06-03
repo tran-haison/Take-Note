@@ -17,7 +17,7 @@
         <meta-data
             android:name="com.google.firebase.ml.vision.DEPENDENCIES"
             android:value="ocr" />
-        <!-- To use multiple models: android:value="ocr,model2,model3" -->
+        <!-- Download the model when user download the app -->
 
         <activity android:name=".model.ImageActivity"
             android:label="@string/empty" />

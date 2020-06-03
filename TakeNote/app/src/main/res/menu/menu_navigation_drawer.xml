@@ -1,26 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    android:fontFamily="@font/balootamma_medium">
 
-    <group android:checkableBehavior="single" >
+    <group android:checkableBehavior="single">
 
         <item
-            android:title="Settings"
             android:id="@+id/navigation_settings"
-            android:icon="@drawable/ic_settings_24dp"/>
+            android:icon="@drawable/ic_settings_24dp"
+            android:title="Settings" />
+
+    </group>
 
         <item
-            android:title="Folder"
-            android:id="@+id/navigation_folder"
-            android:icon="@drawable/ic_folder_open_24dp">
+            android:title="Folders">
 
             <menu>
                 <item
-                    android:title="Create new folder"
                     android:id="@+id/navigation_create_new_folder"
-                    android:icon="@drawable/ic_add_24dp"/>
+                    android:icon="@drawable/ic_add_24dp"
+                    android:title="Create new folder" />
             </menu>
 
         </item>
 
-    </group>
+
 </menu>

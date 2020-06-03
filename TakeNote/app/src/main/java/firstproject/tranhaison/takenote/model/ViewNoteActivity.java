@@ -5,6 +5,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.core.app.ActivityCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.Manifest;
 import android.content.Intent;
@@ -27,6 +29,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -58,6 +61,8 @@ public class ViewNoteActivity extends AppCompatActivity {
     ImageButton imageButtonPhoto, imageButtonMenu, imageButtonSearch;
     ImageView imageViewNoteAdd;
     TextView textViewPromptNote;
+    DrawerLayout drawerLayout;
+    NavigationView navigationView;
 
     /**
      * Code to define the action
@@ -87,12 +92,14 @@ public class ViewNoteActivity extends AppCompatActivity {
         floatingActionButtonAdd = (FloatingActionButton) findViewById(R.id.floatingActionButtonAdd);
         imageViewNoteAdd = (ImageView) findViewById(R.id.imageViewNoteAdd);
         textViewPromptNote = (TextView) findViewById(R.id.textViewPromptNote);
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
+        navigationView = (NavigationView) findViewById(R.id.navigationView);
 
         /**
          * noteAdapter is used to connect between notes (which are stored in noteArrayList) and ListView
          */
         noteArrayList = new ArrayList<>();
-        noteAdapter = new NoteAdapter(myDB,ViewNoteActivity.this, R.layout.note_layout, noteArrayList);
+        noteAdapter = new NoteAdapter(myDB,ViewNoteActivity.this, R.layout.note_row, noteArrayList);
         listViewNote.setAdapter(noteAdapter);
         listViewNote.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
 
@@ -102,6 +109,8 @@ public class ViewNoteActivity extends AppCompatActivity {
         deleteMultiNotes();
 
         buttonPhotoClick();
+        buttonMenuClick();
+        navigationItemSelect();
 
         promptEmptyNote();
     }
@@ -192,6 +201,44 @@ public class ViewNoteActivity extends AppCompatActivity {
                 popupMenuPhoto();
             }
         });
+    }
+
+    /**
+     * Open the Navigation Menu
+     */
+    private void buttonMenuClick() {
+        imageButtonMenu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                drawerLayout.openDrawer(GravityCompat.START);
+                navigationView.bringToFront();
+            }
+        });
+    }
+
+    private void navigationItemSelect() {
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                switch (menuItem.getItemId()) {
+                    case R.id.navigation_settings:
+                        Toast.makeText(ViewNoteActivity.this, "Setting", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.navigation_create_new_folder:
+
+                        break;
+                }
+                return true;
+            }
+        });
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START))
+            drawerLayout.closeDrawer(GravityCompat.START);
+        else
+            super.onBackPressed();
     }
 
     /**
