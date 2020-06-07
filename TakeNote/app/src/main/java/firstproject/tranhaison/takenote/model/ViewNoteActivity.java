@@ -9,6 +9,8 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -22,6 +24,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -36,6 +40,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 import firstproject.tranhaison.takenote.Image;
+import firstproject.tranhaison.takenote.helper.Folder;
 import firstproject.tranhaison.takenote.helper.Note;
 import firstproject.tranhaison.takenote.adapter.NoteAdapter;
 import firstproject.tranhaison.takenote.adapter.NotesDbAdapter;
@@ -55,6 +60,7 @@ public class ViewNoteActivity extends AppCompatActivity {
     NotesDbAdapter myDB;
     NoteAdapter noteAdapter;
     ArrayList<Note> noteArrayList;
+    ArrayList<Folder> folderArrayList;
 
     ListView listViewNote;
     FloatingActionButton floatingActionButtonAdd;
@@ -63,9 +69,10 @@ public class ViewNoteActivity extends AppCompatActivity {
     TextView textViewPromptNote;
     DrawerLayout drawerLayout;
     NavigationView navigationView;
+    Menu navigationViewMenu;
 
     /**
-     * Code to define the action
+     * Code to define the activity for result
      */
     final int REQUEST_CODE_EDIT = 1;
     final int REQUEST_CODE_CAMERA = 2;
@@ -94,15 +101,18 @@ public class ViewNoteActivity extends AppCompatActivity {
         textViewPromptNote = (TextView) findViewById(R.id.textViewPromptNote);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
         navigationView = (NavigationView) findViewById(R.id.navigationView);
+        navigationViewMenu = navigationView.getMenu();
 
         /**
          * noteAdapter is used to connect between notes (which are stored in noteArrayList) and ListView
          */
+        folderArrayList = new ArrayList<>();
         noteArrayList = new ArrayList<>();
         noteAdapter = new NoteAdapter(myDB,ViewNoteActivity.this, R.layout.note_row, noteArrayList);
         listViewNote.setAdapter(noteAdapter);
         listViewNote.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
 
+        getFolders();
         getNotes();
         addNewNote();
         editNote();
@@ -225,12 +235,47 @@ public class ViewNoteActivity extends AppCompatActivity {
                         Toast.makeText(ViewNoteActivity.this, "Setting", Toast.LENGTH_SHORT).show();
                         break;
                     case R.id.navigation_create_new_folder:
-
+                        dialogCreateFolder();
                         break;
                 }
                 return true;
             }
         });
+    }
+
+    private void dialogCreateFolder() {
+        final AlertDialog.Builder alert = new AlertDialog.Builder(ViewNoteActivity.this);
+        View view = getLayoutInflater().inflate(R.layout.custom_dialog, null);
+
+        final EditText editTextAddFolder = (EditText) view.findViewById(R.id.editTextAddFolder);
+        Button buttonCancelFolder = (Button) view.findViewById(R.id.buttonCancelFolder);
+        Button buttonAddFolder = (Button) view.findViewById(R.id.buttonAddFolder);
+
+        alert.setView(view);
+
+        final AlertDialog alertDialog = alert.create();
+        alertDialog.setCanceledOnTouchOutside(true);
+
+        buttonCancelFolder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alertDialog.dismiss();
+            }
+        });
+
+        buttonAddFolder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String folderName = editTextAddFolder.getText().toString();
+                myDB.createFolder(folderName);
+
+                navigationViewMenu.add(folderName);
+
+                alertDialog.dismiss();
+            }
+        });
+
+        alertDialog.show();
     }
 
     @Override
@@ -334,6 +379,15 @@ public class ViewNoteActivity extends AppCompatActivity {
         noteArrayList.clear();
         noteArrayList = myDB.fetchAllNotes();
         noteAdapter.notifyDataSetChanged();
+    }
+
+    private void getFolders() {
+        folderArrayList.clear();
+        folderArrayList = myDB.fetchAllFolders();
+
+        for (int i=0; i<folderArrayList.size(); i++) {
+            navigationViewMenu.add(folderArrayList.get(i).getName());
+        }
     }
 
     /**
