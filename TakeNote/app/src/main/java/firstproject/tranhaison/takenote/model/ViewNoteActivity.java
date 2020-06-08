@@ -10,7 +10,6 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -237,6 +236,9 @@ public class ViewNoteActivity extends AppCompatActivity {
                     case R.id.navigation_create_new_folder:
                         dialogCreateFolder();
                         break;
+                    case R.id.navigation_edit_folder:
+
+                        break;
                 }
                 return true;
             }
@@ -268,9 +270,7 @@ public class ViewNoteActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String folderName = editTextAddFolder.getText().toString();
                 myDB.createFolder(folderName);
-
                 navigationViewMenu.add(folderName);
-
                 alertDialog.dismiss();
             }
         });

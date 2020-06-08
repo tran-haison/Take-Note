@@ -52,7 +52,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/relativeLayoutActionBar" />
+            app:layout_constraintTop_toBottomOf="@+id/relativeLayoutViewNote" />
 
         <ImageView
             android:id="@+id/imageViewNoteAdd"
@@ -73,6 +73,7 @@
             android:layout_height="wrap_content"
             android:text="@string/hi_do_you_want_to_add_a_new_note"
             android:textSize="20sp"
+            android:textColor="#545450"
             android:fontFamily="@font/balootamma_medium"
             android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -96,7 +97,7 @@
             app:borderWidth="0dp"/>
 
         <RelativeLayout
-            android:id="@+id/relativeLayoutActionBar"
+            android:id="@+id/relativeLayoutViewNote"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:minHeight="?attr/actionBarSize"
