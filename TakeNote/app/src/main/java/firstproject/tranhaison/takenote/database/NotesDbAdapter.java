@@ -1,4 +1,4 @@
-package firstproject.tranhaison.takenote.adapter;
+package firstproject.tranhaison.takenote.database;
 
 import android.content.Context;
 import android.database.SQLException;
@@ -7,7 +7,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -41,11 +40,7 @@ public class NotesDbAdapter {
     public static final String KEY_FOLDER_ID = "folder_id";
     public static final String KEY_FOLDER_NAME = "folder_name";
 
-    // NOTE_FOLDER table - column name
-    public static final String KEY_NOTE_FOLDER_ID = "note_folder_id";
-
     // Init new instance
-    private static final String TAG = "NotesDbAdapter";
     private final Context mCtx;
     private DatabaseHelper mDbHelper;
     private SQLiteDatabase mDb;
@@ -57,16 +52,17 @@ public class NotesDbAdapter {
 
     // FOLDERS table create statement
     private static final String CREATE_TABLE_FOLDERS =
-            "CREATE TABLE " + TABLE_FOLDERS + "("
-            + KEY_FOLDER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + KEY_FOLDER_NAME + " TEXT NOT NULL" + ");";
+            "CREATE TABLE folders (folder_id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    + "folder_name TEXT NOT NULL);";
+
 
     // NOTE_FOLDER table create statement
     private static final String CREATE_TABLE_NOTE_FOLDER =
-            "CREATE TABLE " + TABLE_NOTE_FOLDER + "("
-            + KEY_NOTE_FOLDER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + KEY_ROWID + " INTEGER NOT NULL, "
-            + KEY_FOLDER_ID + " INTEGER NOT NULL" + ");";
+            "CREATE TABLE note_folder (folder_id INTEGER, "
+                    + "_id INTEGER, "
+                    + "PRIMARY KEY(folder_id, _id), "
+                    + "FOREIGN KEY (folder_id) REFERENCES folders (folder_id) ON DELETE CASCADE, "
+                    + "FOREIGN KEY (_id) REFERENCES notes (_id) ON DELETE CASCADE);";
 
     private static class DatabaseHelper extends SQLiteOpenHelper {
 
@@ -83,8 +79,6 @@ public class NotesDbAdapter {
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
-                    + newVersion + ", which will destroy all old data");
             // onUpgrade drop old tables
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOTES);
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_FOLDERS);
@@ -158,8 +152,8 @@ public class NotesDbAdapter {
      */
     public long createNoteFolder(long note_id, long folder_id) {
         ContentValues values = new ContentValues();
-        values.put(KEY_ROWID, note_id);
         values.put(KEY_FOLDER_ID, folder_id);
+        values.put(KEY_ROWID, note_id);
         return mDb.insert(TABLE_NOTE_FOLDER, null, values);
     }
 
@@ -174,27 +168,22 @@ public class NotesDbAdapter {
 
     /**
      * Delete the folder and all the notes in it (or not)
-     * @param folder
+     * @param folder_id
      * @param deleteAllNotesInFolder
      * @return
      */
-    public boolean deleteFolder(Folder folder, boolean deleteAllNotesInFolder) {
+    public boolean deleteFolder(long folder_id, boolean deleteAllNotesInFolder) {
         if (deleteAllNotesInFolder) {
-            ArrayList<Note> noteArrayList = fetchAllNotesInFolder(folder.getName());
+            ArrayList<Note> noteArrayList = fetchAllNotesInFolder(folder_id);
             for (Note note : noteArrayList) {
                 deleteNote(note.getId());
             }
         }
-        return mDb.delete(TABLE_FOLDERS, KEY_FOLDER_ID + "=" + folder.getId(), null) > 0;
+        return mDb.delete(TABLE_FOLDERS, KEY_FOLDER_ID + "=" + folder_id, null) > 0;
     }
 
-    /**
-     * Delete the connection between note and folder when the note is not belonged to a folder anymore
-     * @param note_folder_id
-     * @return
-     */
-    public boolean deleteNoteFolder(long note_folder_id) {
-        return mDb.delete(TABLE_NOTE_FOLDER, KEY_NOTE_FOLDER_ID + "=" + note_folder_id, null) > 0;
+    public boolean deleteNoteFolder(long folder_id, long note_id) {
+        return mDb.delete(TABLE_NOTE_FOLDER, KEY_FOLDER_ID + "=" + folder_id + " AND " + KEY_ROWID + "=" + note_id, null) > 0;
     }
 
     /**
@@ -247,21 +236,17 @@ public class NotesDbAdapter {
 
     /**
      * Get all notes in one specific folder
-     * @param folder_name
+     * @param folder_id
      * @return
      */
-    public ArrayList<Note> fetchAllNotesInFolder(String folder_name) {
-        String query = "SELECT * FROM "
-                + TABLE_NOTES + " tn, "
-                + TABLE_FOLDERS + " tf, "
-                + TABLE_NOTE_FOLDER + " tnf "
-                + "WHERE " + "tn." + KEY_ROWID + "=" + "tnf." + KEY_ROWID
-                + " AND " + "tf." + KEY_FOLDER_ID + "=" + "tnf." + KEY_FOLDER_ID
-                + " AND " + "tf." + KEY_FOLDER_NAME + "= '" + folder_name + "'";
-
+    public ArrayList<Note> fetchAllNotesInFolder(long folder_id) {
+        String query = "SELECT " + "tn." + KEY_ROWID + ",tn." + KEY_TITLE + ",tn." + KEY_BODY + ",tn." + KEY_DATE + ",tn." + KEY_IMAGE
+                + " FROM " + TABLE_NOTES + " AS tn, " + TABLE_NOTE_FOLDER + " AS tnf"
+                + " WHERE " + "tn." + KEY_ROWID + " = " + "tnf." + KEY_ROWID
+                + " AND " + "tnf." + KEY_FOLDER_ID + " = " + folder_id + ";";
         Cursor cursor = mDb.rawQuery(query, null);
-
         ArrayList<Note> noteArrayList = new ArrayList<>();
+
         if (cursor != null && cursor.moveToFirst()) {
             do {
                 Note note = new Note();
@@ -289,7 +274,7 @@ public class NotesDbAdapter {
         if (cursor != null && cursor.moveToFirst()) {
             do {
                 Folder folder = new Folder();
-                folder.setId(Integer.parseInt(cursor.getString(0)));
+                folder.setId(Long.parseLong(cursor.getString(0)));
                 folder.setName(cursor.getString(1));
                 folderArrayList.add(folder);
             } while (cursor.moveToNext());
@@ -327,19 +312,5 @@ public class NotesDbAdapter {
         ContentValues values = new ContentValues();
         values.put(KEY_FOLDER_NAME, folder_name);
         return mDb.update(TABLE_FOLDERS, values, KEY_FOLDER_ID + "=" + folder_id, null) > 0;
-    }
-
-    /**
-     * Update the note folder with the note_folder's ID
-     * @param note_folder_id
-     * @param note_id
-     * @param folder_id
-     * @return
-     */
-    public boolean updateNoteFolder(long note_folder_id, long note_id, long folder_id) {
-        ContentValues values = new ContentValues();
-        values.put(KEY_ROWID, note_id);
-        values.put(KEY_FOLDER_ID, folder_id);
-        return mDb.update(TABLE_NOTE_FOLDER, values, KEY_NOTE_FOLDER_ID + "=" + note_folder_id, null) > 0;
     }
 }

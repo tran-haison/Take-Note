@@ -10,9 +10,15 @@
     <string name="empty"></string>
     <string name="todo">TODO</string>
     <string name="hi_do_you_want_to_add_a_new_note">Hi! Do you want to add a new note?</string>
-    <string name="save_note_prompt">Save it before you forget it!</string>
+    <string name="save_note_prompt">Save it before forget it!</string>
     <string name="take_note">Take Note</string>
     <string name="create_a_new_folder">Create a new folder</string>
     <string name="cancel">Cancel</string>
-    <string name="enter_new_folder">Enter new folder</string>
+    <string name="new_folder_name">New folder\'s name</string>
+    <string name="edit_folder">Edit folder</string>
+    <string name="delete_this_folder">Delete folder</string>
+    <string name="delete_this_folder_with_notes">Delete folder with notes</string>
+    <string name="edit_folder_s_name">Edit folder\'s name</string>
+    <string name="add_to_folder">Add to folder</string>
+    <string name="delete_note">Delete note</string>
 </resources>

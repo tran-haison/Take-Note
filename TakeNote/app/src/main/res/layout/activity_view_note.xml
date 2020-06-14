@@ -123,16 +123,14 @@
                 android:contentDescription="@string/todo"
                 android:layout_centerVertical="true"
                 android:layout_alignParentEnd="true"/>
-
-            <ImageButton
-                android:id="@+id/imageButtonSearch"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:src="@drawable/ic_search_24dp"
-                android:background="?attr/selectableItemBackground"
-                android:contentDescription="@string/todo"
+            
+            <androidx.appcompat.widget.SearchView
+                android:id="@+id/search_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:layout_toStartOf="@id/imageButtonPhoto"/>
+                android:layout_toStartOf="@id/imageButtonPhoto"
+                android:layout_toEndOf="@id/imageButtonMenu"/>
 
         </RelativeLayout>
 

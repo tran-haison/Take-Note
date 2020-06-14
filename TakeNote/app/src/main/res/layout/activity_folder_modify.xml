@@ -39,23 +39,10 @@
             android:contentDescription="@string/todo"
             android:src="@drawable/ic_arrow_back_24dp" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toEndOf="@id/imageButtonBack"
-            android:paddingTop="4dp"
-            android:text="Edit folder"
-            android:textSize="22sp"
-            android:textColor="#545450"
-            android:fontFamily="@font/balootamma_medium"
-            android:layout_centerVertical="true"
-
-            />
-
     </RelativeLayout>
 
-    <ListView
-        android:id="@+id/listViewFolder"
+    <ExpandableListView
+        android:id="@+id/expandableListViewFolder"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="4dp"
@@ -65,6 +52,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/relativeLayoutFolderModify" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

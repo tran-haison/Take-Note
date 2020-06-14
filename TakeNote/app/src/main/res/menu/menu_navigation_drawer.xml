@@ -2,28 +2,26 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     android:fontFamily="@font/balootamma_medium">
 
-        <item
-            android:id="@+id/navigation_settings"
-            android:icon="@drawable/ic_settings_24dp"
-            android:title="Settings" />
+    <item
+        android:id="@+id/navigation_settings"
+        android:icon="@drawable/ic_settings_24dp"
+        android:title="Settings" />
 
-        <item
-            android:title="Folders">
+    <item
+        android:title="Folders">
 
-            <menu>
-                <item
-                    android:id="@+id/navigation_create_new_folder"
-                    android:icon="@drawable/ic_new_folder_24dp"
-                    android:title="Create folder" />
+        <menu>
+            <item
+                android:id="@+id/navigation_create_new_folder"
+                android:icon="@drawable/ic_new_folder_24dp"
+                android:title="Create new folder" />
 
-                <item
-                    android:id="@+id/navigation_edit_folder"
-                    android:icon="@drawable/ic_edit_24dp"
-                    android:title="Edit folder" />
+            <item
+                android:id="@+id/navigation_edit_folder"
+                android:icon="@drawable/ic_edit_24dp"
+                android:title="Edit folders" />
+        </menu>
 
-            </menu>
-
-        </item>
-
+    </item>
 
 </menu>

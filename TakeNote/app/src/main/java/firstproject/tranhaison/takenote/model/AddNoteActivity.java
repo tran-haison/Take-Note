@@ -29,7 +29,7 @@ import java.util.Date;
 
 import firstproject.tranhaison.takenote.Image;
 import firstproject.tranhaison.takenote.helper.Note;
-import firstproject.tranhaison.takenote.adapter.NotesDbAdapter;
+import firstproject.tranhaison.takenote.database.NotesDbAdapter;
 import firstproject.tranhaison.takenote.R;
 
 /**
@@ -73,7 +73,7 @@ public class AddNoteActivity extends AppCompatActivity {
         getFolderImage();
 
         Note editedNote = getEditedNote();
-        updateNote();
+        returnActivity();
         addNewNote(editedNote);
         grabImageText();
     }
@@ -274,7 +274,7 @@ public class AddNoteActivity extends AppCompatActivity {
      * When user click on arrow back navigation button
      * Same as back pressed
      */
-    private void updateNote() {
+    private void returnActivity() {
         toolbarAddNote.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -13,6 +13,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import firstproject.tranhaison.takenote.Image;
+import firstproject.tranhaison.takenote.database.NotesDbAdapter;
 import firstproject.tranhaison.takenote.helper.Note;
 import firstproject.tranhaison.takenote.R;
 

@@ -13,11 +13,6 @@ public class Folder implements Serializable {
 
     public Folder() {}
 
-    public Folder(long id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-
     public long getId() {
         return id;
     }

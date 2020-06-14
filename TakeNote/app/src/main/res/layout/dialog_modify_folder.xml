@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/textViewEditFolder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#AF5A41"
+        android:text="@string/edit_folder"
+        android:paddingTop="5dp"
+        android:textSize="22sp"
+        android:textColor="#FFFFFF"
+        android:fontFamily="@font/balootamma_medium"
+        android:textAlignment="center"/>
+
+    <!--<LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="10">
+
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_delete_red_24dp"
+            android:contentDescription="@string/todo" />
+
+        <Button
+            android:id="@+id/buttonDeleteNote"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="9"
+            android:paddingStart="15dp"
+            android:paddingEnd="15dp"
+            android:text="@string/delete_note"
+            android:textAlignment="textStart"
+            android:textAllCaps="false"
+            android:textSize="18sp"
+            android:textColor="#545450"
+            android:fontFamily="@font/balootamma_medium"
+            android:background="?attr/selectableItemBackground" />
+
+    </LinearLayout>-->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="10">
+
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_delete_24dp"
+            android:contentDescription="@string/todo" />
+
+        <Button
+            android:id="@+id/buttonDeleteFolder"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="9"
+            android:paddingStart="15dp"
+            android:paddingEnd="15dp"
+            android:text="@string/delete_this_folder"
+            android:textAlignment="textStart"
+            android:textAllCaps="false"
+            android:textSize="18sp"
+            android:textColor="#545450"
+            android:fontFamily="@font/balootamma_medium"
+            android:background="?attr/selectableItemBackground" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="10">
+
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_delete_forever_24dp"
+            android:contentDescription="@string/todo" />
+
+        <Button
+            android:id="@+id/buttonDeleteFolderWithNotes"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="9"
+            android:paddingStart="15dp"
+            android:paddingEnd="15dp"
+            android:text="@string/delete_this_folder_with_notes"
+            android:textAlignment="textStart"
+            android:textAllCaps="false"
+            android:textSize="18sp"
+            android:textColor="#545450"
+            android:fontFamily="@font/balootamma_medium"
+            android:background="?attr/selectableItemBackground" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="10">
+
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_edit_24dp"
+            android:contentDescription="@string/todo" />
+
+        <Button
+            android:id="@+id/buttonEditFolderName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="9"
+            android:paddingStart="15dp"
+            android:paddingEnd="15dp"
+            android:text="@string/edit_folder_s_name"
+            android:textAlignment="textStart"
+            android:textAllCaps="false"
+            android:textSize="18sp"
+            android:textColor="#545450"
+            android:fontFamily="@font/balootamma_medium"
+            android:background="?attr/selectableItemBackground" />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/buttonCancel"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="10dp"
+        android:text="@string/cancel"
+        android:textColor="#545450"
+        android:textSize="20sp"
+        android:textAlignment="center"
+        android:fontFamily="@font/balootamma_semibold"
+        android:background="@drawable/background_activated"/>
+
+</LinearLayout>

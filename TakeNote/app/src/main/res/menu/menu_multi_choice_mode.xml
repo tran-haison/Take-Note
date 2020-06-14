@@ -5,7 +5,13 @@
     <item
         android:id="@+id/menu_multi_item_delete"
         android:icon="@drawable/ic_delete_red_24dp"
-        android:orderInCategory="100"
         android:title="Delete"
         app:showAsAction="always" />
+
+    <item
+        android:id="@+id/menu_multi_item_folder_add"
+        android:icon="@drawable/ic_new_folder_24dp"
+        android:title="Add to folder"
+        app:showAsAction="always" />
+
 </menu>

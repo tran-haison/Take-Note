@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
+import androidx.appcompat.widget.SearchView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -23,6 +24,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -42,7 +44,7 @@ import firstproject.tranhaison.takenote.Image;
 import firstproject.tranhaison.takenote.helper.Folder;
 import firstproject.tranhaison.takenote.helper.Note;
 import firstproject.tranhaison.takenote.adapter.NoteAdapter;
-import firstproject.tranhaison.takenote.adapter.NotesDbAdapter;
+import firstproject.tranhaison.takenote.database.NotesDbAdapter;
 import firstproject.tranhaison.takenote.R;
 
 /**
@@ -63,12 +65,13 @@ public class ViewNoteActivity extends AppCompatActivity {
 
     ListView listViewNote;
     FloatingActionButton floatingActionButtonAdd;
-    ImageButton imageButtonPhoto, imageButtonMenu, imageButtonSearch;
+    ImageButton imageButtonPhoto, imageButtonMenu;
     ImageView imageViewNoteAdd;
     TextView textViewPromptNote;
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     Menu navigationViewMenu;
+    SearchView searchView;
 
     /**
      * Code to define the activity for result
@@ -93,7 +96,6 @@ public class ViewNoteActivity extends AppCompatActivity {
          */
         imageButtonMenu = (ImageButton) findViewById(R.id.imageButtonMenu);
         imageButtonPhoto = (ImageButton) findViewById(R.id.imageButtonPhoto);
-        imageButtonSearch = (ImageButton) findViewById(R.id.imageButtonSearch);
         listViewNote = (ListView) findViewById(R.id.listViewNote);
         floatingActionButtonAdd = (FloatingActionButton) findViewById(R.id.floatingActionButtonAdd);
         imageViewNoteAdd = (ImageView) findViewById(R.id.imageViewNoteAdd);
@@ -101,6 +103,7 @@ public class ViewNoteActivity extends AppCompatActivity {
         drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
         navigationView = (NavigationView) findViewById(R.id.navigationView);
         navigationViewMenu = navigationView.getMenu();
+        searchView = (SearchView) findViewById(R.id.search_bar);
 
         /**
          * noteAdapter is used to connect between notes (which are stored in noteArrayList) and ListView
@@ -237,7 +240,9 @@ public class ViewNoteActivity extends AppCompatActivity {
                         dialogCreateFolder();
                         break;
                     case R.id.navigation_edit_folder:
-
+                        Intent intent = new Intent(ViewNoteActivity.this, FolderModifyActivity.class);
+                        startActivity(intent);
+                        overridePendingTransition(R.anim.anim_enter_from_right, R.anim.anim_exit_to_left);
                         break;
                 }
                 return true;
@@ -245,9 +250,12 @@ public class ViewNoteActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Show a dialog to create new folder
+     */
     private void dialogCreateFolder() {
         final AlertDialog.Builder alert = new AlertDialog.Builder(ViewNoteActivity.this);
-        View view = getLayoutInflater().inflate(R.layout.custom_dialog, null);
+        View view = getLayoutInflater().inflate(R.layout.dialog_create_folder, null);
 
         final EditText editTextAddFolder = (EditText) view.findViewById(R.id.editTextAddFolder);
         Button buttonCancelFolder = (Button) view.findViewById(R.id.buttonCancelFolder);
@@ -269,9 +277,16 @@ public class ViewNoteActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String folderName = editTextAddFolder.getText().toString();
-                myDB.createFolder(folderName);
-                navigationViewMenu.add(folderName);
-                alertDialog.dismiss();
+
+                if (folderName.isEmpty()) {
+                    Toast.makeText(ViewNoteActivity.this, "Please enter folder's name", Toast.LENGTH_SHORT).show();
+                } else {
+                    myDB.createFolder(folderName);
+                    navigationViewMenu.add(folderName);
+                    folderArrayList.clear();
+                    folderArrayList = myDB.fetchAllFolders();
+                    alertDialog.dismiss();
+                }
             }
         });
 
@@ -454,9 +469,10 @@ public class ViewNoteActivity extends AppCompatActivity {
 
             @Override
             public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                SparseBooleanArray selected = noteAdapter.getSelectedID();
+
                 switch (item.getItemId()) {
                     case R.id.menu_multi_item_delete:
-                        SparseBooleanArray selected = noteAdapter.getSelectedID();
                         // Capture all selected ID with a loop
                         // Delete all selected notes
                         for (int i=(selected.size() - 1); i>=0; i--) {
@@ -468,6 +484,18 @@ public class ViewNoteActivity extends AppCompatActivity {
                         // Close CAB
                         mode.finish();
                         return true;
+
+                    case R.id.menu_multi_item_folder_add:
+                        ArrayList<Note> noteList = new ArrayList<>();
+                        for (int i=(selected.size() - 1); i>=0; i--) {
+                            Note selectedNote = (Note) noteAdapter.getItem(selected.keyAt(i));
+                            noteList.add(selectedNote);
+                        }
+                        dialogAddNoteToFolder(noteList);
+                        // Close CAB
+                        mode.finish();
+                        return true;
+
                     default:
                         return false;
                 }
@@ -480,4 +508,43 @@ public class ViewNoteActivity extends AppCompatActivity {
         });
     }
 
+    private void dialogAddNoteToFolder(final ArrayList<Note> noteList) {
+        final AlertDialog.Builder alert = new AlertDialog.Builder(ViewNoteActivity.this);
+        View view = getLayoutInflater().inflate(R.layout.dialog_list_folder, null);
+
+        ListView listViewFolder = (ListView) view.findViewById(R.id.listViewFolder);
+        Button buttonCancelAddToFolder = (Button) view.findViewById(R.id.buttonCancelAddToFolder);
+
+        ArrayList<String> folderName = new ArrayList<>();
+        for (Folder folder : folderArrayList) {
+            folderName.add(folder.getName());
+        }
+        ArrayAdapter arrayAdapter = new ArrayAdapter(ViewNoteActivity.this, android.R.layout.simple_list_item_1, folderName);
+        listViewFolder.setAdapter(arrayAdapter);
+
+        alert.setView(view);
+
+        final AlertDialog alertDialog = alert.create();
+        alertDialog.setCanceledOnTouchOutside(true);
+
+        buttonCancelAddToFolder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alertDialog.dismiss();
+            }
+        });
+
+        listViewFolder.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Folder folder = folderArrayList.get(position);
+                for (Note note : noteList) {
+                    myDB.createNoteFolder(note.getId(), folder.getId());
+                }
+                alertDialog.dismiss();
+            }
+        });
+
+        alertDialog.show();
+    }
 }
