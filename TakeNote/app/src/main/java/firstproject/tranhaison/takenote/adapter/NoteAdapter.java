@@ -28,12 +28,14 @@ public class NoteAdapter extends BaseAdapter {
     private List<Note> noteList;
     private NotesDbAdapter db;
     private SparseBooleanArray selectedItem;
+    private String searchText;
 
-    public NoteAdapter(NotesDbAdapter db, Context context, int layout, List<Note> noteList) {
+    public NoteAdapter(NotesDbAdapter db, Context context, int layout, List<Note> noteList, String searchText) {
         this.db = db;
         this.context = context;
         this.layout = layout;
         this.noteList = noteList;
+        this.searchText = searchText;
         selectedItem = new SparseBooleanArray();
     }
 
@@ -43,7 +45,10 @@ public class NoteAdapter extends BaseAdapter {
      */
     @Override
     public int getCount() {
-        noteList = db.fetchAllNotes();
+        if (!searchText.isEmpty())
+            noteList = db.fetchAllNotesByText(searchText);
+        else
+            noteList = db.fetchAllNotes();
         return noteList.size();
     }
 
@@ -54,7 +59,10 @@ public class NoteAdapter extends BaseAdapter {
      */
     @Override
     public Object getItem(int position) {
-        noteList = db.fetchAllNotes();
+        if (!searchText.isEmpty())
+            noteList = db.fetchAllNotesByText(searchText);
+        else
+            noteList = db.fetchAllNotes();
         return noteList.get(position);
     }
 
@@ -65,7 +73,10 @@ public class NoteAdapter extends BaseAdapter {
      */
     @Override
     public long getItemId(int position) {
-        noteList = db.fetchAllNotes();
+        if (!searchText.isEmpty())
+            noteList = db.fetchAllNotesByText(searchText);
+        else
+            noteList = db.fetchAllNotes();
         return noteList.get(position).getId();
     }
 
@@ -91,7 +102,11 @@ public class NoteAdapter extends BaseAdapter {
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
         ViewHolder viewHolder;
-        noteList = db.fetchAllNotes();
+
+        if (!searchText.isEmpty())
+            noteList = db.fetchAllNotesByText(searchText);
+        else
+            noteList = db.fetchAllNotes();
 
         if (convertView == null) {
             // Call layoutInflater

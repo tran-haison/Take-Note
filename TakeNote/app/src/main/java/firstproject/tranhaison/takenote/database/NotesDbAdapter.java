@@ -235,7 +235,35 @@ public class NotesDbAdapter {
     }
 
     /**
-     * Get all notes in one specific folder
+     * Get all notes by the input text from user
+     * @param text
+     * @return
+     */
+    public ArrayList<Note> fetchAllNotesByText(String text) {
+        Cursor cursor = mDb.query(TABLE_NOTES, new String[] {KEY_ROWID, KEY_TITLE, KEY_BODY, KEY_DATE, KEY_IMAGE},
+                KEY_TITLE + " LIKE " + "'%" + text + "%'"
+                + " OR " + KEY_BODY + " LIKE " + "'%" + text + "%'",
+                null, null, null, null);
+
+        ArrayList<Note> noteArrayList = new ArrayList<>();
+
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                Note note = new Note();
+                note.setId(Long.parseLong(cursor.getString(0)));
+                note.setTitle(cursor.getString(1));
+                note.setNote(cursor.getString(2));
+                note.setDate(cursor.getString(3));
+                note.setImage(cursor.getString(4));
+                noteArrayList.add(note);
+            } while (cursor.moveToNext());
+        }
+
+        return noteArrayList;
+    }
+
+    /**
+     * Get all notes in specific folder
      * @param folder_id
      * @return
      */

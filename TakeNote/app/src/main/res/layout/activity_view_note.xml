@@ -99,8 +99,7 @@
         <RelativeLayout
             android:id="@+id/relativeLayoutViewNote"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:minHeight="?attr/actionBarSize"
+            android:layout_height="?attr/actionBarSize"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -124,10 +123,13 @@
                 android:layout_centerVertical="true"
                 android:layout_alignParentEnd="true"/>
             
-            <androidx.appcompat.widget.SearchView
+            <com.mancj.materialsearchbar.MaterialSearchBar
                 android:id="@+id/search_bar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
+                app:mt_speechMode="false"
+                app:mt_hint="Search your notes"
+                app:mt_textColor="#545450"
                 android:layout_centerVertical="true"
                 android:layout_toStartOf="@id/imageButtonPhoto"
                 android:layout_toEndOf="@id/imageButtonMenu"/>

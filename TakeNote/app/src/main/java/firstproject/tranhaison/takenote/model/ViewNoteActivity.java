@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
-import androidx.appcompat.widget.SearchView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -17,6 +16,8 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.SparseBooleanArray;
 import android.view.ActionMode;
 import android.view.Menu;
@@ -35,6 +36,7 @@ import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+import com.mancj.materialsearchbar.MaterialSearchBar;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -61,6 +63,7 @@ public class ViewNoteActivity extends AppCompatActivity {
     NotesDbAdapter myDB;
     NoteAdapter noteAdapter;
     ArrayList<Note> noteArrayList;
+    ArrayList<Note> noteListSearch;
     ArrayList<Folder> folderArrayList;
 
     ListView listViewNote;
@@ -71,7 +74,7 @@ public class ViewNoteActivity extends AppCompatActivity {
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     Menu navigationViewMenu;
-    SearchView searchView;
+    MaterialSearchBar materialSearchBar;
 
     /**
      * Code to define the activity for result
@@ -103,21 +106,24 @@ public class ViewNoteActivity extends AppCompatActivity {
         drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
         navigationView = (NavigationView) findViewById(R.id.navigationView);
         navigationViewMenu = navigationView.getMenu();
-        searchView = (SearchView) findViewById(R.id.search_bar);
+        materialSearchBar = (MaterialSearchBar) findViewById(R.id.search_bar);
+
+        searchBarClick();
 
         /**
          * noteAdapter is used to connect between notes (which are stored in noteArrayList) and ListView
          */
         folderArrayList = new ArrayList<>();
         noteArrayList = new ArrayList<>();
-        noteAdapter = new NoteAdapter(myDB,ViewNoteActivity.this, R.layout.note_row, noteArrayList);
+        noteListSearch = new ArrayList<>();
+        noteAdapter = new NoteAdapter(myDB,ViewNoteActivity.this, R.layout.note_row, noteArrayList, "");
         listViewNote.setAdapter(noteAdapter);
         listViewNote.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
 
         getFolders();
         getNotes();
         addNewNote();
-        editNote();
+        editNote(false);
         deleteMultiNotes();
 
         buttonPhotoClick();
@@ -226,6 +232,54 @@ public class ViewNoteActivity extends AppCompatActivity {
                 navigationView.bringToFront();
             }
         });
+    }
+
+    private void searchBarClick() {
+        materialSearchBar.addTextChangeListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                startSearch(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+        materialSearchBar.setOnSearchActionListener(new MaterialSearchBar.OnSearchActionListener() {
+            @Override
+            public void onSearchStateChanged(boolean enabled) {
+                if (!enabled) {
+                    noteAdapter = new NoteAdapter(myDB,ViewNoteActivity.this, R.layout.note_row, noteArrayList, "");
+                    listViewNote.setAdapter(noteAdapter);
+                    editNote(false);
+                } else {
+                    editNote(true);
+                }
+            }
+
+            @Override
+            public void onSearchConfirmed(CharSequence text) {
+                startSearch(text.toString());
+            }
+
+            @Override
+            public void onButtonClicked(int buttonCode) {
+
+            }
+        });
+    }
+
+    private void startSearch(String text) {
+        noteListSearch = myDB.fetchAllNotesByText(text);
+        noteAdapter = new NoteAdapter(myDB,ViewNoteActivity.this, R.layout.note_row, noteListSearch, text);
+        listViewNote.setAdapter(noteAdapter);
     }
 
     private void navigationItemSelect() {
@@ -424,11 +478,16 @@ public class ViewNoteActivity extends AppCompatActivity {
      * Edit a note when clicking the specific note
      * or just see it
      */
-    private void editNote() {
+    private void editNote(final boolean searchEnabled) {
         listViewNote.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Note editedNote = myDB.fetchNote(noteArrayList.get(position).getId());
+                Note editedNote;
+
+                if (searchEnabled)
+                    editedNote = myDB.fetchNote(noteListSearch.get(position).getId());
+                else
+                    editedNote = myDB.fetchNote(noteArrayList.get(position).getId());
 
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("editedNote", editedNote);
