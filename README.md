@@ -1,2 +1,2 @@
-# TakeNote
-Make a simple app to take note
+# Take Note
+A simple app to take note
